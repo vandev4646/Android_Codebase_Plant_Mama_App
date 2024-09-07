@@ -75,7 +75,8 @@ data class PlantUiState(
 )
 
 data class PlantDetails(
-    @DrawableRes val imageResourceId: Int = R.drawable.plant_logo,
+    //@DrawableRes val imageResourceId: Int = R.drawable.plant_logo,
+    val profilePic: String = "",
     val name: String = "",
     val age: String = "",
     val type: String = "",
@@ -88,7 +89,7 @@ data class PlantDetails(
  * [ItemUiState] is not a valid [Int], then the quantity will be set to 0
  */
 fun PlantDetails.toItem(): Plant = Plant(
-    imageResourceId = imageResourceId,
+    profilePic = profilePic,
     name = name,
     age = age.toIntOrNull()?:0,
     type = type,
@@ -108,7 +109,7 @@ fun Plant.toPlantUiState(isEntryValid: Boolean = false): PlantUiState = PlantUiS
  * Extension function to convert [Plant] to [PlantDetails]
  */
 fun Plant.toPlantDetails(): PlantDetails = PlantDetails(
-    imageResourceId = imageResourceId,
+    profilePic = profilePic,
     name = name,
     age = age.toString(),
     type = type,

@@ -6,6 +6,7 @@ interface AppContainer {
     val waterRepository : WaterRepository
     val plantsRepository: PlantsRepository
     val reminderRepository: ReminderRepository
+    val photosRepository: PhotosRepository
 
 }
 
@@ -18,6 +19,10 @@ class DefaultAppContainer(context: Context) : AppContainer {
 
     override val reminderRepository: ReminderRepository by lazy {
         OfflineRemindersRepository(PlantDatabase.getDatabase(context).reminderDao())
+    }
+
+    override val photosRepository: PhotosRepository by lazy {
+        OfflinePhotoRepository(PlantDatabase.getDatabase(context).photoDao())
     }
 
 }

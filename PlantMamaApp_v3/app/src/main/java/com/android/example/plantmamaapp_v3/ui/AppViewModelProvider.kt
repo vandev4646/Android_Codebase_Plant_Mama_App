@@ -14,7 +14,8 @@ object AppViewModelProvider {
             val waterRepository =
                 (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as PlantMamaApplication).container.waterRepository
             PlantMamaMainScreenViewModel(
-                waterRepository = waterRepository
+                waterRepository = waterRepository,
+                plantsRepository = plantMamaApplication().container.plantsRepository
             )
 
         }
@@ -31,6 +32,14 @@ object AppViewModelProvider {
 
         initializer {
             ReminderListViewModel(this.createSavedStateHandle(), plantMamaApplication().container.reminderRepository)
+        }
+
+        initializer {
+            PhotoViewModel(this.createSavedStateHandle(),plantMamaApplication().container.photosRepository)
+        }
+
+        initializer {
+            PhotoDisplayViewModel(this.createSavedStateHandle(),plantMamaApplication().container.photosRepository)
         }
     }
 }

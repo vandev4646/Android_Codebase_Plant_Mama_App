@@ -79,12 +79,12 @@ import java.util.Locale
 
 
 //class CameraMainScreen () : ComponentActivity(){
-object CameraStartDestination: NavigationDestination {
-    override val route = "camera_start"
+object SelectProfilePicDestination: NavigationDestination {
+    override val route = "select_profile_pic_start"
 }
 
     @Composable
-    fun StartMainCamera(
+    fun SelectProfilePicScreen(
         viewModelPlantMamaMainScreen: PlantMamaMainScreenViewModel,
         //onPhotoSelected:() -> Unit,
         navController: NavController,
@@ -104,30 +104,17 @@ object CameraStartDestination: NavigationDestination {
 
 
 
-        val multiplePhotoPickerLauncher = rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.PickMultipleVisualMedia(),
-            onResult = {
-                    uris -> viewModelPlantMamaMainScreen.selectedImagesUris = uris
-                navController.navigate(SelectedPhotoScreenDestination.route)
-
-            }
-        )
-
         val singlePhotoPickerLauncher = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.PickVisualMedia(),
             onResult = {
-                uri ->
-                if (uri != null) {
-                    viewModelPlantMamaMainScreen.currentUri = uri
-                }
+                    uri -> viewModelPlantMamaMainScreen.currentUri = uri!!
                 navController.popBackStack()
+
             }
         )
 
-        var cameraForProfile = remember{viewModelPlantMamaMainScreen.cameraForProfile}
 
-
-        CheckCameraPermission()
+        //CheckCameraPermission()
 
             BottomSheetScaffold(
                 scaffoldState = scaffoldState,
@@ -182,17 +169,9 @@ object CameraStartDestination: NavigationDestination {
                     ) {
                         IconButton(
                             onClick = {
-                                if(!cameraForProfile){
-                                    multiplePhotoPickerLauncher.launch(
-                                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                                    )
-                                }
-                                if(cameraForProfile){
-                                    singlePhotoPickerLauncher.launch(
-                                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                                    )
-
-                                }
+                                singlePhotoPickerLauncher.launch(
+                                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                )
 
                             }
                         ) {
@@ -203,28 +182,14 @@ object CameraStartDestination: NavigationDestination {
                         }
                         IconButton(
                             onClick = {
-                                if(!cameraForProfile){
-                                    takePhoto(
-                                        controller = controller,
-                                        plantName = viewModelPlantMamaMainScreen.currentPlant.name,
-                                        context = context,
-                                        viewModelPlantMamaMainScreen = viewModelPlantMamaMainScreen,
-                                        navController = navController,
-                                        navigationAfter = {navController.navigate(SelectedSinglePhotoScreenDestination.route)}
-                                    )
-                                }
-
-                                if(cameraForProfile){
-                                    takePhoto(
-                                        controller = controller,
-                                        plantName = SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.US)
-                                            .format(System.currentTimeMillis()),
-                                        context = context,
-                                        viewModelPlantMamaMainScreen = viewModelPlantMamaMainScreen,
-                                        navController = navController,
-                                        navigationAfter = {navController.popBackStack()}
-                                    )
-                                }
+                                takePhoto(
+                                    controller = controller,
+                                    //plantName = viewModelPlantMamaMainScreen.currentPlant.name,
+                                    context = context,
+                                    viewModelPlantMamaMainScreen = viewModelPlantMamaMainScreen,
+                                    navController = navController,
+                                )
+                                navController.popBackStack()
 
                             }
                         ) {
@@ -243,12 +208,12 @@ object CameraStartDestination: NavigationDestination {
 
     private fun takePhoto(
         controller: LifecycleCameraController,
-        plantName: String,
+        //plantName: String,
         context: Context,
         viewModelPlantMamaMainScreen: PlantMamaMainScreenViewModel,
         navController: NavController,
-        navigationAfter: () -> Unit,
-    ) {
+    ) //: Uri
+    {
 
         // Create time stamped name and MediaStore entry.
         val TAG = "PlantMamaApp"
@@ -259,7 +224,7 @@ object CameraStartDestination: NavigationDestination {
             put(MediaStore.MediaColumns.DISPLAY_NAME, name)
             put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
             if(Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
-                put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/PlantMama/${plantName}")
+                put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/PlantMama/profilePic/${name}")
             }
         }
 
@@ -270,6 +235,8 @@ object CameraStartDestination: NavigationDestination {
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                 contentValues)
             .build()
+
+        //var uri: Uri  = Uri.EMPTY
 
 
         controller.takePicture(
@@ -282,9 +249,8 @@ object CameraStartDestination: NavigationDestination {
                     Log.d(TAG, msg)
                     viewModelPlantMamaMainScreen.selectedImagesUris.plusElement(outputFileResults.savedUri)
                     viewModelPlantMamaMainScreen.currentUri = outputFileResults.savedUri!!
-
-                    //navController.navigate(SelectedSinglePhotoScreenDestination.route)
-                    navigationAfter()
+                    navController.popBackStack()
+                  // uri = outputFileResults.savedUri!!
 
                 }
 
@@ -295,30 +261,10 @@ object CameraStartDestination: NavigationDestination {
             }
 
         )
+        //return uri
     }
 
 
-@OptIn( ExperimentalPermissionsApi::class)
-@Composable
-fun CheckCameraPermission() {
-    val cameraPermissionState = rememberPermissionState(android.Manifest.permission.CAMERA)
-    val requestLauncher =
-        rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-            if (isGranted) {
-                // Permission granted
-            } else {
-                // Handle permission denial
-            }
-        }
-
-    LaunchedEffect(cameraPermissionState) {
-        if (cameraPermissionState.status.isGranted && cameraPermissionState.status.shouldShowRationale) {
-            // Show rationale if needed
-        } else {
-            requestLauncher.launch(Manifest.permission.CAMERA)
-        }
-    }
-}
 
 
 

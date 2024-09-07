@@ -17,6 +17,11 @@ interface PlantsRepository {
     fun getPlantStream(id: Int): Flow<Plant?>
 
     /**
+     * Retrieve an item from the given data source that matches with the [id].
+     */
+    fun getFirstPlant(id: Int): Plant?
+
+    /**
      * Insert item in the data source
      */
     suspend fun insertPlant(plant: Plant)

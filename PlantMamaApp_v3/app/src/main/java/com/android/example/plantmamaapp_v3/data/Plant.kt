@@ -10,14 +10,15 @@ import com.android.example.plantmamaapp_v3.R
 data class Plant(
     @PrimaryKey(autoGenerate = true)
     val id:Int = 0,
-    @DrawableRes val imageResourceId: Int,
+   // @DrawableRes val imageResourceId: Int,
+    val profilePic: String,
     val name: String,
     val age: Int,
     val type: String,
     val description: String,
 )
 
-
+/*
 val plants = listOf(
     Plant(0, R.drawable.aloe, "Aloe", 1, "Aloe", "None"),
     Plant(1, R.drawable.forever_plant, "Forever", 4, "Pothos", "None"),
@@ -28,3 +29,5 @@ val plants = listOf(
     Plant(6, R.drawable.zoe, "Zoe", 3, "Fiddle Leaf Fig", "None"),
 
 )
+
+ */

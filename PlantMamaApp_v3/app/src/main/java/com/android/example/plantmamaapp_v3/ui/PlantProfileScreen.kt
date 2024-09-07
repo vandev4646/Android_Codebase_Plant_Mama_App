@@ -1,6 +1,6 @@
 package com.android.example.plantmamaapp_v3.ui
 
-import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,13 +12,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Icon
-import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -28,16 +26,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.android.example.plantmamaapp_v3.R
-import com.android.example.plantmamaapp_v3.data.Photo
+import com.android.example.plantmamaapp_v3.data.Photo2
 import com.android.example.plantmamaapp_v3.data.Plant
-import com.android.example.plantmamaapp_v3.data.photos
-import com.android.example.plantmamaapp_v3.data.plants
+import com.android.example.plantmamaapp_v3.data.photo2s
 import com.android.example.plantmamaapp_v3.ui.theme.PLantMamaTheme
 
 import androidx.compose.animation.animateColorAsState
@@ -45,16 +41,13 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Card
@@ -62,7 +55,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.ProvideTextStyle
-import androidx.compose.material3.Surface
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.State
@@ -71,8 +63,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.SubcomposeLayout
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -81,30 +75,41 @@ import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
+import coil.compose.rememberImagePainter
+import coil.request.ImageRequest
 import com.android.example.plantmamaapp_v3.ui.SegmentedButtonsDefaults.ITEM_ANIMATION_MILLIS
 import com.android.example.plantmamaapp_v3.ui.SegmentedButtonsDefaults.minimumHeight
 import com.android.example.plantmamaapp_v3.ui.SegmentedButtonsDefaults.outlineThickness
+import com.android.example.plantmamaapp_v3.ui.navigation.NavigationDestination
 
+import kotlinx.coroutines.flow.StateFlow
 
+import java.util.Date
+import java.util.Locale
+
+object PlantProfileDestination : NavigationDestination {
+    override val route = "plant_profile"
+    const val itemIdArg = "itemId"
+    val routeWithArgs = "$route/{$itemIdArg}"
+}
 
 @Composable
 fun PlantProfleMain(
     viewModel: PlantMamaMainScreenViewModel = viewModel(factory = AppViewModelProvider.Factory),
     navController: NavController,
+    reminderListiewModel: ReminderListViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    photoViewModel: PhotoViewModel = viewModel(factory = AppViewModelProvider.Factory)
 )
 {
     val backStackEntry by navController.currentBackStackEntryAsState()
-    val currentScreen = PlantScreen.valueOf(
-        backStackEntry?.destination?.route ?: PlantScreen.Start.name)
+
 
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+    val state = rememberScrollState()
     var showAddReminderDialog by rememberSaveable { mutableStateOf(false) }
     var showEditPlantDialog by rememberSaveable { mutableStateOf(false) }
 
@@ -117,18 +122,23 @@ fun PlantProfleMain(
 
     Scaffold(
         modifier = Modifier
-            .nestedScroll(scrollBehavior.nestedScrollConnection)
+            //.nestedScroll(scrollBehavior.nestedScrollConnection)
             .fillMaxSize()
             .padding(dimensionResource(R.dimen.padding_small)),
         topBar = {
             profileTopBar(plant = currentPlant,
                 canNavigateBack = navController.previousBackStackEntry != null,
-                navigateUp = { navController.navigateUp() })
+                navigateUp = {
+                    //navController.navigateUp()
+                    navController.navigate(PlantMamaHomeDesintation.route)
+                })
         },
 
         content = { padding ->
 
-            Column {
+            Column(
+               // modifier = Modifier.verticalScroll(rememberScrollState())
+            ) {
                 Spacer(modifier = Modifier.size(dimensionResource(R.dimen.padding_medium)))
                 Row(
                     modifier = Modifier
@@ -169,7 +179,7 @@ fun PlantProfleMain(
                             Column {
                                 // Text("Add/Edit", style = MaterialTheme.typography.headlineSmall)
                                 IconButton(onClick = {
-                                    navController.navigate(PlantScreen.StartCamera.name)
+                                    navController.navigate(CameraStartDestination.route)
                                 }) {
                                     Icon(painter = painterResource(id = R.drawable.baseline_camera_alt_24), contentDescription = "camera")
                                 }
@@ -221,11 +231,13 @@ fun PlantProfleMain(
                 }
                 Spacer(modifier = Modifier.size(dimensionResource(R.dimen.padding_medium)))
                 if (selectedIndex == 0){
-                    imageListLayout()
+                    PhotoDisplay(onPhotoClick = {navController.navigate(InspectPhotoScreenDestination.route)})
+                    //imageListLayout()
                 }
 
                 if (selectedIndex == 1){
-                    ReminderListScreen()
+                   // val reminderList: StateFlow<ReminderListUiState> =  reminderListiewModel.getRemindersForPlant(currentPlant.id)
+                    ReminderListScreen(plantId = currentPlant.id)
 
                 }
 
@@ -236,7 +248,7 @@ fun PlantProfleMain(
             }
 
             if (showEditPlantDialog){
-                AddPlant(onDismissRequest = { showEditPlantDialog = false }, onConfirmation = {showEditPlantDialog = false})
+                AddPlant(onDismissRequest = { showEditPlantDialog = false }, onConfirmation = {showEditPlantDialog = false}, {navController.navigate(CameraStartDestination.route)}, viewModel2 = viewModel)
             }
 
         }
@@ -264,12 +276,36 @@ fun profileTopBar(plant: Plant,
             }
         },
        actions = {
-           Image(
-               painter = painterResource(plant.imageResourceId),
-               modifier = Modifier
-                   .size(dimensionResource(R.dimen.main_image_size)),
-               contentDescription = null
-           )
+          // Image(
+          //     painter = painterResource(plant.imageResourceId),
+          //     modifier = Modifier
+          //         .size(dimensionResource(R.dimen.main_image_size)),
+          //     contentDescription = null
+          // )
+           if(!plant.profilePic.equals("")){
+               AsyncImage(
+                   model = ImageRequest.Builder(LocalContext.current)
+                       .data(plant.profilePic)
+                       .placeholder(R.drawable.plant_logo)
+                       .build(),
+                   contentDescription = "",
+                   modifier = Modifier
+                       .padding(2.dp)
+                       .size(dimensionResource(R.dimen.main_image_size)),
+                   //.clip(CircleShape),
+                   contentScale = ContentScale.Fit,
+               )
+           }
+
+           else{
+               val painter = painterResource(R.drawable.plant_logo)
+
+               val description = plant.name
+               val title = plant.name
+               Image(painter = painter, contentDescription = description, modifier = Modifier.size(dimensionResource(R.dimen.main_image_size)))
+               //ImageCard(painter = painter, contentDescription = description, title = title, modifier = Modifier.size(dimensionResource(R.dimen.main_image_size)))
+
+           }
 
        } ,
     )
@@ -367,8 +403,8 @@ fun imageListLayout(){
     LazyVerticalGrid(
         columns = GridCells.Adaptive(minSize = 128.dp)
     ) {
-        items(items = photos) {
-            imageDisplay(photo = it)
+        items(items = photo2s) {
+            imageDisplay(photo2 = it)
         }
     }
 
@@ -376,9 +412,9 @@ fun imageListLayout(){
 
 
 @Composable
-fun imageDisplay(photo: Photo){
+fun imageDisplay(photo2: Photo2){
     Image(
-        painter = painterResource(photo.imageResourceId),
+        painter = painterResource(photo2.imageResourceId),
         contentDescription = null
     )
 }
@@ -624,7 +660,7 @@ private enum class ButtonSlots {
     Buttons,
     Divider,
 }
-
+/*
 @Preview
 @Composable
 fun PreviewPlantDetails(){
@@ -632,6 +668,8 @@ fun PreviewPlantDetails(){
         plantDetailsDisplay(plants[0])
     }
 }
+
+ */
 
 /*
 @Preview

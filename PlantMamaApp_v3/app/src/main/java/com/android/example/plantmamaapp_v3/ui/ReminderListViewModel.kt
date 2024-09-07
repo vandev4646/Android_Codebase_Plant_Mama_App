@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.example.plantmamaapp_v3.data.Reminder
 import com.android.example.plantmamaapp_v3.data.ReminderRepository
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -13,16 +14,29 @@ import kotlinx.coroutines.flow.stateIn
 /**
  * ViewModel to retrieve all items in the Room database.
  */
-class ReminderListViewModel(savedStateHandle: SavedStateHandle,
-    reminderRepository: ReminderRepository) : ViewModel() {
+class ReminderListViewModel( savedStateHandle: SavedStateHandle,reminderRepository: ReminderRepository) : ViewModel() {
+    val reminderRepository = reminderRepository
 
+    private val plantID: Int = checkNotNull(savedStateHandle[PlantProfileDestination.itemIdArg])
+
+    /*
+
+    fun getRemindersForPlant(plantID: Int) : Flow<ReminderListUiState> =
+        reminderRepository.getAllRemindersStream(plantID).map { ReminderListUiState(it) }
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
+                initialValue = ReminderListUiState()
+            )
+
+     */
     var plantId = 0
     /**
      * Holds reminder list ui state. The list of items are retrieved from [ReminderRepository] and mapped to
      * [ReminderListUiState]
      */
     val reminderListUiState: StateFlow<ReminderListUiState> =
-        reminderRepository.getAllRemindersStream(plantId).map { ReminderListUiState(it) }
+        reminderRepository.getAllRemindersStream(plantID).map { ReminderListUiState(it) }
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),

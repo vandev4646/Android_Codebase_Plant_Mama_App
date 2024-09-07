@@ -1,46 +1,48 @@
 package com.android.example.plantmamaapp_v3.ui
 
 import android.net.Uri
-import androidx.activity.result.PickVisualMediaRequest
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Photo
-import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.compose.rememberImagePainter
-import com.android.example.plantmamaapp_v3.data.photos
+import com.android.example.plantmamaapp_v3.ui.navigation.NavigationDestination
+import kotlinx.coroutines.launch
 import androidx.compose.foundation.Image as Image1
 
+object SelectedPhotoScreenDestination : NavigationDestination {
+    override val route = "selected_photo"
+}
+
+object SelectedSinglePhotoScreenDestination : NavigationDestination {
+    override val route = "selected_single_photo"
+}
 
 @Composable
-fun SelectedPhotoScreen(viewModel: PlantMamaMainScreenViewModel){
+fun SelectedPhotoScreen(viewModel: PlantMamaMainScreenViewModel = viewModel(factory = AppViewModelProvider.Factory),
+                        photoViewModel: PhotoViewModel = viewModel(factory = AppViewModelProvider.Factory),
+                        onCancel: () -> Unit = {},
+                        plantId: Int
+                        ){
 
     var selectedImagesUris = remember {
         viewModel.selectedImagesUris
     }
+
+    val coroutineScope = rememberCoroutineScope()
 
     Surface(modifier = Modifier.fillMaxSize()) {
         LazyColumn(){
@@ -62,10 +64,19 @@ fun SelectedPhotoScreen(viewModel: PlantMamaMainScreenViewModel){
                 ) {
                     Button(onClick = {
 
+                        selectedImagesUris.forEach{uri ->
+                           coroutineScope.launch {
+                               photoViewModel.savePhoto(plantId, uri.toString())
+                           }
+                        }
+
+                        onCancel()
+
                     }) {
                         Text(text = "Keep Selected")
                     }
                     Button(onClick = {
+                        onCancel()
 
                     }) {
                         Text(text = "Cancel")
@@ -79,7 +90,18 @@ fun SelectedPhotoScreen(viewModel: PlantMamaMainScreenViewModel){
 }
 
 @Composable
-fun SelectedSinglePhotoScreen(uri: Uri){
+fun SelectedSinglePhotoScreen(uri: Uri,
+                              viewModel: PlantMamaMainScreenViewModel = viewModel(factory = AppViewModelProvider.Factory),
+                              photoViewModel: PhotoViewModel = viewModel(factory = AppViewModelProvider.Factory),
+                              onCancel: () -> Unit = {},
+                              plantId: Int){
+
+
+    val coroutineScope = rememberCoroutineScope()
+
+      //  coroutineScope.launch {
+      //      photoViewModel.savePhoto(viewModel.currentPlant.id, uri.toString())
+      //  }
 
 
     Surface(modifier = Modifier.fillMaxSize()) {
@@ -93,11 +115,16 @@ fun SelectedSinglePhotoScreen(uri: Uri){
             horizontalArrangement = Arrangement.SpaceAround
         ) {
             Button(onClick = {
+                coroutineScope.launch {
+                    photoViewModel.savePhoto(plantId, uri.toString())
+                }
+                onCancel()
 
             }) {
                 Text(text = "Keep Selected")
             }
             Button(onClick = {
+                onCancel()
 
             }) {
                 Text(text = "Cancel")

@@ -7,6 +7,8 @@ class OfflinePlantsRepository(private val plantDao: PlantDao) : PlantsRepository
 
     override fun getPlantStream(id: Int): Flow<Plant?> = plantDao.getItem(id)
 
+    override fun getFirstPlant(id: Int): Plant? = plantDao.getPlantNonFlow(id)
+
     override suspend fun insertPlant(plant: Plant) = plantDao.insert(plant)
 
     override suspend fun deletePlant(plant: Plant) = plantDao.delete(plant)

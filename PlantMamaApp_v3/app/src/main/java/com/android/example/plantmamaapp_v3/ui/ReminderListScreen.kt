@@ -27,13 +27,16 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.android.example.plantmamaapp_v3.R
 import com.android.example.plantmamaapp_v3.data.Reminder
+import kotlinx.coroutines.flow.StateFlow
 
 @Composable
 fun ReminderListScreen(
+    //reminderList: List<Reminder>,
     viewModel: PlantMamaMainScreenViewModel = viewModel(factory = AppViewModelProvider.Factory),
-    reminderListiewModel: ReminderListViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    reminderListiewModel: ReminderListViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    plantId: Int
 ){
-    reminderListiewModel.plantId = remember {viewModel.currentPlant.id}
+    reminderListiewModel.plantId = remember {plantId}
     val reminderListUiState by reminderListiewModel.reminderListUiState.collectAsState()
 
     val reminderList = reminderListUiState.reminderList
