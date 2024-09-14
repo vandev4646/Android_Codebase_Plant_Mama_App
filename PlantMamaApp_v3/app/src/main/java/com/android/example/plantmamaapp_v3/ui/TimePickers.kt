@@ -107,24 +107,23 @@ fun TimePickerExamples() {
     when {
         showDialExample -> DialExample(
             onDismiss = { showDialExample = false },
-            onConfirm = {
-                    time ->
+            onConfirm = { time ->
                 selectedTime = time
                 showDialExample = false
             },
         )
+
         showInputExample -> InputExample(
             onDismiss = { showInputExample = false },
-            onConfirm = {
-                    time ->
+            onConfirm = { time ->
                 selectedTime = time
                 showInputExample = false
             },
         )
+
         showAdvancedExample -> AdvancedTimePickerExample(
             onDismiss = { showAdvancedExample = false },
-            onConfirm = {
-                    time ->
+            onConfirm = { time ->
                 selectedTime = time
                 showAdvancedExample = false
             },
@@ -315,7 +314,7 @@ fun AdvancedTimePickerDialog(
 
 @Preview()
 @Composable
-fun displayTimePicker(){
+fun displayTimePicker() {
     PLantMamaTheme {
         TimePickerExamples()
     }

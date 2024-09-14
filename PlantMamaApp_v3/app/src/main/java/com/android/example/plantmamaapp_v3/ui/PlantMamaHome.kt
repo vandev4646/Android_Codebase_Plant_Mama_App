@@ -5,11 +5,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -22,7 +20,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -52,9 +49,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.dialog
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.android.example.plantmamaapp_v3.R
@@ -70,14 +64,12 @@ object PlantMamaHomeDesintation : NavigationDestination {
 fun PlantGridScreen(
     plants: List<Plant>,
     modifier: Modifier = Modifier,
-    contentPadding: PaddingValues = PaddingValues(0.dp),
-    imageOnClick: () -> Unit = {},
     navController: NavController,
     viewModel: PlantMamaMainScreenViewModel = viewModel(factory = AppViewModelProvider.Factory),
-){
+) {
 
     var showAddPlantDialog by rememberSaveable { mutableStateOf(false) }
-    Scaffold (
+    Scaffold(
 
         topBar = {
             PlantTopAppBar(
@@ -86,42 +78,42 @@ fun PlantGridScreen(
             )
         },
 
-        floatingActionButton = {FloatingActionButton(onClick = {
+        floatingActionButton = {
+            FloatingActionButton(onClick = {
 
-            showAddPlantDialog = true
-        }) {
-            Icon(Icons.Filled.Add, "Floating action button.")
-        }},
+                showAddPlantDialog = true
+            }) {
+                Icon(Icons.Filled.Add, "Floating action button.")
+            }
+        },
 
         content = { contentPadding ->
 
-                LazyVerticalGrid(
-                    columns = GridCells.Adaptive(minSize = 125.dp),
-                    modifier = modifier.padding(horizontal = 4.dp),
-                    contentPadding = contentPadding,
-                ){
-                    items(items = plants){
-                        plantItem(plant = it, ///modifier = modifier
-                            //.padding(4.dp),
-                            imageOnClick = {
-                                // navController.navigate(PlantScreen.PlantProfile.name)
-                                viewModel.currentPlant = it
-                               // imageOnClick
-                                           }
-                            , navController = navController,
-                            viewModel = viewModel)
-                        //.fillMaxWidth()
-                        //.aspectRatio(1.5f))
-                    }
-
+            LazyVerticalGrid(
+                columns = GridCells.Adaptive(minSize = 125.dp),
+                modifier = modifier.padding(horizontal = 4.dp),
+                contentPadding = contentPadding,
+            ) {
+                items(items = plants) {
+                    plantItem(
+                        plant = it,
+                        navController = navController,
+                        viewModel = viewModel
+                    )
                 }
+            }
 
-            if(showAddPlantDialog){
+            if (showAddPlantDialog) {
                 viewModel.cameraForProfile = true
-                AddPlant(onDismissRequest = { showAddPlantDialog = false }, onConfirmation = {showAddPlantDialog = false}, {navController.navigate(CameraStartDestination.route)}, viewModel2 = viewModel)
+                AddPlant(
+                    onDismissRequest = { showAddPlantDialog = false },
+                    onConfirmation = { showAddPlantDialog = false },
+                    { navController.navigate(CameraStartDestination.route) },
+                    viewModel2 = viewModel
+                )
 
             }
-            if(!showAddPlantDialog){
+            if (!showAddPlantDialog) {
                 viewModel.cameraForProfile = false
             }
 
@@ -140,7 +132,6 @@ fun PlantGridScreen(
 fun plantItem(
     plant: Plant,
     modifier: Modifier = Modifier,
-    imageOnClick: () -> Unit = {},
     navController: NavController,
     viewModel: PlantMamaMainScreenViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
@@ -157,12 +148,11 @@ fun plantItem(
                 .padding(12.dp)
                 .clickable(onClick = {
                     viewModel.currentPlant = plant
-               //     imageOnClick
                     navController.navigate("${PlantProfileDestination.route}/${viewModel.currentPlant.id}")
                 })
         ) {
 
-            if(!plant.profilePic.equals("")){
+            if (!plant.profilePic.equals("")) {
                 AsyncImage(
                     model = ImageRequest.Builder(LocalContext.current)
                         .data(plant.profilePic)
@@ -170,16 +160,12 @@ fun plantItem(
                         .build(),
                     contentDescription = "",
                     modifier = Modifier
-                        //.padding(2.dp)
                         .fillMaxSize(0.9f)
                         .aspectRatio(1F),
-                    //.clip(CircleShape),
                     contentScale = ContentScale.FillWidth,
                 )
                 Text(plant.name)
-            }
-
-            else{
+            } else {
                 AsyncImage(
                     model = ImageRequest.Builder(LocalContext.current)
                         .data(R.drawable.plant_logo)
@@ -187,18 +173,11 @@ fun plantItem(
                         .build(),
                     contentDescription = "",
                     modifier = Modifier
-                        //.padding(2.dp)
                         .fillMaxSize(0.9f)
                         .aspectRatio(1F),
-                    //.clip(CircleShape),
                     contentScale = ContentScale.FillWidth,
                 )
                 Text(plant.name)
-           //     val painter = painterResource(R.drawable.plant_logo)
-
-           //     val description = plant.name
-           //     val title = plant.name
-           //     ImageCard(painter = painter, contentDescription = description, title = title, )
 
             }
         }
@@ -211,31 +190,21 @@ fun plantItem(
  * @param modifier modifiers to set to this composable
  */
 @Composable
-fun PlantTopAppBar( canNavigateBack: Boolean,
-                    navigateUp: () -> Unit,
-                    modifier: Modifier = Modifier) {
+fun PlantTopAppBar(
+    canNavigateBack: Boolean,
+    navigateUp: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     CenterAlignedTopAppBar(
-        //scrollBehavior = scrollBehavior,
         title = {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                //horizontalArrangement = Alignment.CenterHorizontally,
-                // modifier = Modifier
-                //     .fillMaxWidth()
-                //     .padding(dimensionResource(R.dimen.padding_small))
             ) {
                 Image(
                     modifier = Modifier
                         .size(dimensionResource(R.dimen.main_image_size)),
-                    //.padding(dimensionResource(R.dimen.padding_small)),
-                    //.fillMaxHeight(),
                     contentScale = ContentScale.Crop,
                     painter = painterResource(R.drawable.plant_logo),
-
-                    // Content Description is not needed here - image is decorative, and setting a
-                    // null content description allows accessibility services to skip this element
-                    // during navigation.
-
                     contentDescription = null
                 )
                 Spacer(modifier = Modifier.size(dimensionResource(R.dimen.padding_medium)))
@@ -261,9 +230,7 @@ fun PlantTopAppBar( canNavigateBack: Boolean,
         }
     )
 
-
 }
-
 
 
 @Composable
@@ -278,28 +245,36 @@ fun ImageCard(
         shape = RoundedCornerShape(15.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 5.dp)
     ) {
-        Box(modifier = Modifier.height(100.dp)){
+        Box(modifier = Modifier.height(100.dp)) {
             Image(
                 painter = painter,
                 contentDescription = contentDescription,
                 contentScale = ContentScale.Crop
             )
-            Box(modifier = Modifier
-                .fillMaxSize()
-                .background(
-                    brush = Brush.verticalGradient(
-                        colors = listOf(
-                            Color.Transparent,
-                            Color.White
-                        ),
-                        startY = 100f
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                Color.Transparent,
+                                Color.White
+                            ),
+                            startY = 100f
+                        )
                     )
-                ))
-            Box(modifier = Modifier
-                .fillMaxSize()
-                .padding(12.dp),
-                contentAlignment = Alignment.BottomStart){
-                Text(title, style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurface)
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(12.dp),
+                contentAlignment = Alignment.BottomStart
+            ) {
+                Text(
+                    title,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
             }
         }
 
@@ -309,7 +284,7 @@ fun ImageCard(
 
 @Preview
 @Composable
-fun ScreenPreview(){
+fun ScreenPreview() {
     PLantMamaTheme {
         //PlantMamaApp()
 
@@ -318,15 +293,15 @@ fun ScreenPreview(){
 
 @Preview
 @Composable
-fun PlantGridScreenPreview(){
+fun PlantGridScreenPreview() {
     PLantMamaTheme {
-       // PlantGridScreen(plants = plants, imageOnClick = {})
+        // PlantGridScreen(plants = plants, imageOnClick = {})
     }
 }
 
 @Preview
 @Composable
-fun cardPrview(){
+fun cardPrview() {
     PLantMamaTheme {
         val painter = painterResource(id = R.drawable.forever_plant)
         val description = "Forever Plant"

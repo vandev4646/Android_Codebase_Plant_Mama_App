@@ -3,7 +3,7 @@ package com.android.example.plantmamaapp_v3.data
 import android.content.Context
 
 interface AppContainer {
-    val waterRepository : WaterRepository
+    val waterRepository: WaterRepository
     val plantsRepository: PlantsRepository
     val reminderRepository: ReminderRepository
     val photosRepository: PhotosRepository

@@ -10,7 +10,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
-class PhotoDisplayViewModel (savedStateHandle: SavedStateHandle, photosRepository: PhotosRepository): ViewModel(){
+class PhotoDisplayViewModel(
+    savedStateHandle: SavedStateHandle,
+    photosRepository: PhotosRepository
+) : ViewModel() {
 
     val photosRepository = photosRepository
 
@@ -27,8 +30,6 @@ class PhotoDisplayViewModel (savedStateHandle: SavedStateHandle, photosRepositor
     companion object {
         private const val TIMEOUT_MILLIS = 5_000L
     }
-
-    val photoLists = photosRepository.getAllPhotoStreamByPlantId(plantID)
 }
 
 /**

@@ -18,7 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
-import coil.compose.rememberImagePainter
+import coil.compose.rememberAsyncImagePainter
 import com.android.example.plantmamaapp_v3.ui.navigation.NavigationDestination
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.Image as Image1
@@ -32,11 +32,12 @@ object SelectedSinglePhotoScreenDestination : NavigationDestination {
 }
 
 @Composable
-fun SelectedPhotoScreen(viewModel: PlantMamaMainScreenViewModel = viewModel(factory = AppViewModelProvider.Factory),
-                        photoViewModel: PhotoViewModel = viewModel(factory = AppViewModelProvider.Factory),
-                        onCancel: () -> Unit = {},
-                        plantId: Int
-                        ){
+fun SelectedPhotoScreen(
+    viewModel: PlantMamaMainScreenViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    photoViewModel: PhotoViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    onCancel: () -> Unit = {},
+    plantId: Int
+) {
 
     var selectedImagesUris = remember {
         viewModel.selectedImagesUris
@@ -45,9 +46,9 @@ fun SelectedPhotoScreen(viewModel: PlantMamaMainScreenViewModel = viewModel(fact
     val coroutineScope = rememberCoroutineScope()
 
     Surface(modifier = Modifier.fillMaxSize()) {
-        LazyColumn(){
+        LazyColumn {
 
-            items(selectedImagesUris) {  uri ->
+            items(selectedImagesUris) { uri ->
                 AsyncImage(
                     model = uri,
                     contentDescription = null,
@@ -58,55 +59,47 @@ fun SelectedPhotoScreen(viewModel: PlantMamaMainScreenViewModel = viewModel(fact
 
         }
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceAround
-                ) {
-                    Button(onClick = {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceAround
+        ) {
+            Button(onClick = {
 
-                        selectedImagesUris.forEach{uri ->
-                           coroutineScope.launch {
-                               photoViewModel.savePhoto(plantId, uri.toString())
-                           }
-                        }
-
-                        onCancel()
-
-                    }) {
-                        Text(text = "Keep Selected")
-                    }
-                    Button(onClick = {
-                        onCancel()
-
-                    }) {
-                        Text(text = "Cancel")
+                selectedImagesUris.forEach { uri ->
+                    coroutineScope.launch {
+                        photoViewModel.savePhoto(plantId, uri.toString())
                     }
                 }
 
+                onCancel()
+
+            }) {
+                Text(text = "Keep Selected")
+            }
+            Button(onClick = {
+                onCancel()
+
+            }) {
+                Text(text = "Cancel")
+            }
+        }
     }
-
-
-
 }
 
 @Composable
-fun SelectedSinglePhotoScreen(uri: Uri,
-                              viewModel: PlantMamaMainScreenViewModel = viewModel(factory = AppViewModelProvider.Factory),
-                              photoViewModel: PhotoViewModel = viewModel(factory = AppViewModelProvider.Factory),
-                              onCancel: () -> Unit = {},
-                              plantId: Int){
-
+fun SelectedSinglePhotoScreen(
+    uri: Uri,
+    photoViewModel: PhotoViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    onCancel: () -> Unit = {},
+    plantId: Int
+) {
 
     val coroutineScope = rememberCoroutineScope()
-
-      //  coroutineScope.launch {
-      //      photoViewModel.savePhoto(viewModel.currentPlant.id, uri.toString())
-      //  }
 
 
     Surface(modifier = Modifier.fillMaxSize()) {
 
-            ImageDisplay(uri = uri)
+        ImageDisplay(uri = uri)
 
 
 
@@ -134,16 +127,14 @@ fun SelectedSinglePhotoScreen(uri: Uri,
     }
 
 
-
 }
 
 @Composable
-fun ImageDisplay(uri: Uri){
+fun ImageDisplay(uri: Uri) {
     Image1(
-        painter = rememberImagePainter(
-            data  = Uri.parse(uri.toString())  // or ht
-        )
-        ,
+        painter = rememberAsyncImagePainter(
+            model = Uri.parse(uri.toString())  // or ht
+        ),
         contentDescription = "123",
         modifier = Modifier.fillMaxSize(),
         contentScale = ContentScale.FillWidth

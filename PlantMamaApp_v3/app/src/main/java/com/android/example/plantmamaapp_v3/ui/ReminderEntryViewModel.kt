@@ -21,21 +21,17 @@ This code was largely inspired thought the android basics class. I included the 
 
 package com.android.example.plantmamaapp_v3.ui
 
-import androidx.annotation.DrawableRes
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.android.example.plantmamaapp_v3.R
 import com.android.example.plantmamaapp_v3.data.Plant
-import com.android.example.plantmamaapp_v3.data.PlantsRepository
 import com.android.example.plantmamaapp_v3.data.Reminder
 import com.android.example.plantmamaapp_v3.data.ReminderRepository
-import java.util.concurrent.TimeUnit
 
 /**
-* ViewModel to validate and insert items in the Room database.
-*/
+ * ViewModel to validate and insert items in the Room database.
+ */
 class ReminderEntryViewModel(private val reminderRepository: ReminderRepository) : ViewModel() {
 
     /**
@@ -50,7 +46,10 @@ class ReminderEntryViewModel(private val reminderRepository: ReminderRepository)
      */
     fun updateUiState(reminderDetails: ReminderDetails) {
         reminderUiState =
-            ReminderUiState(reminderDetails = reminderDetails, isEntryValid = validateInput(reminderDetails))
+            ReminderUiState(
+                reminderDetails = reminderDetails,
+                isEntryValid = validateInput(reminderDetails)
+            )
     }
 
     /**
@@ -94,7 +93,7 @@ data class ReminderDetails(
  */
 fun ReminderDetails.toItem(): Reminder = Reminder(
     wmIdentifier = wmIdentifier,
-    plantID = plantID.toIntOrNull()?:0,
+    plantID = plantID.toIntOrNull() ?: 0,
     title = title,
     date = date,
     time = time,

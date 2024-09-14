@@ -21,18 +21,16 @@ This code was largely inspired thought the android basics class. I included the 
 
 package com.android.example.plantmamaapp_v3.ui
 
-import androidx.annotation.DrawableRes
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.android.example.plantmamaapp_v3.R
 import com.android.example.plantmamaapp_v3.data.Plant
 import com.android.example.plantmamaapp_v3.data.PlantsRepository
 
 /**
-* ViewModel to validate and insert items in the Room database.
-*/
+ * ViewModel to validate and insert items in the Room database.
+ */
 class PlantEntryViewModel(private val plantsRepository: PlantsRepository) : ViewModel() {
 
     /**
@@ -75,7 +73,6 @@ data class PlantUiState(
 )
 
 data class PlantDetails(
-    //@DrawableRes val imageResourceId: Int = R.drawable.plant_logo,
     val profilePic: String = "",
     val name: String = "",
     val age: String = "",
@@ -91,7 +88,7 @@ data class PlantDetails(
 fun PlantDetails.toItem(): Plant = Plant(
     profilePic = profilePic,
     name = name,
-    age = age.toIntOrNull()?:0,
+    age = age.toIntOrNull() ?: 0,
     type = type,
     description = description
 )

@@ -6,9 +6,7 @@ import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.android.example.plantmamaapp_v3.worker.WaterReminderWorker
-
 import java.util.concurrent.TimeUnit
-import javax.sql.DataSource
 
 class WorkManagerWaterRepository(context: Context) : WaterRepository {
     private val workManager = WorkManager.getInstance(context)
@@ -16,7 +14,12 @@ class WorkManagerWaterRepository(context: Context) : WaterRepository {
     override val plants: List<Plant>
         get() = plants
 
-    override fun scheduleReminder(duration: Long, unit: TimeUnit, plantName: String, reminderIdentifier: String) {
+    override fun scheduleReminder(
+        duration: Long,
+        unit: TimeUnit,
+        plantName: String,
+        reminderIdentifier: String
+    ) {
         val data = Data.Builder()
         data.putString(WaterReminderWorker.nameKey, plantName)
 

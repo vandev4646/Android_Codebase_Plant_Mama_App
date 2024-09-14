@@ -17,7 +17,6 @@ object AppViewModelProvider {
                 waterRepository = waterRepository,
                 plantsRepository = plantMamaApplication().container.plantsRepository
             )
-
         }
 
         // Initializer for PlantEntryViewModel
@@ -31,20 +30,48 @@ object AppViewModelProvider {
         }
 
         initializer {
-            ReminderListViewModel(this.createSavedStateHandle(), plantMamaApplication().container.reminderRepository)
+            ReminderListViewModel(
+                this.createSavedStateHandle(),
+                plantMamaApplication().container.reminderRepository
+            )
         }
 
         initializer {
-            PhotoViewModel(this.createSavedStateHandle(),plantMamaApplication().container.photosRepository)
+            PhotoViewModel(
+                this.createSavedStateHandle(),
+                plantMamaApplication().container.photosRepository
+            )
         }
 
         initializer {
-            PhotoDisplayViewModel(this.createSavedStateHandle(),plantMamaApplication().container.photosRepository)
+            PhotoDisplayViewModel(
+                this.createSavedStateHandle(),
+                plantMamaApplication().container.photosRepository
+            )
+        }
+
+        initializer {
+            InspectPhotoViewModel(
+                this.createSavedStateHandle(),
+                plantMamaApplication().container.photosRepository
+            )
+        }
+
+        initializer {
+            PlantEditViewModel(
+                this.createSavedStateHandle(),
+                plantMamaApplication().container.plantsRepository
+            )
+        }
+
+        initializer {
+            DeleteReminderViewModel(
+                this.createSavedStateHandle(),
+                plantMamaApplication().container.reminderRepository
+            )
         }
     }
 }
-
-
 
 
 /**
