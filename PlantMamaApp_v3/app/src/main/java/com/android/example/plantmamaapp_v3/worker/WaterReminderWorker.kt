@@ -14,9 +14,11 @@ class WaterReminderWorker(
     override suspend fun doWork(): Result {
 
         val plantName = inputData.getString(nameKey)
+        val reminderTitle = inputData.getString(reminderTitle)
 
         makePlantReminderNotification(
-            applicationContext.resources.getString(R.string.time_to_water, plantName),
+            reminderTitle?:"",
+            plantName+" Reminder!"?:"",
             applicationContext
         )
 
@@ -25,5 +27,6 @@ class WaterReminderWorker(
 
     companion object {
         const val nameKey = "NAME"
+        const val reminderTitle = "TITLE"
     }
 }

@@ -101,14 +101,6 @@ fun ReminderDetails.toItem(): Reminder = Reminder(
 
 
 /**
- * Extension function to convert [Plant] to [PlantUiState]
- */
-fun Reminder.toReminderUiState(isEntryValid: Boolean = false): ReminderUiState = ReminderUiState(
-    reminderDetails = this.toReminderDetails(),
-    isEntryValid = isEntryValid
-)
-
-/**
  * Extension function to convert [Plant] to [PlantDetails]
  */
 fun Reminder.toReminderDetails(): ReminderDetails = ReminderDetails(

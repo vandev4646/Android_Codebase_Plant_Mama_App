@@ -21,7 +21,6 @@ class PhotoViewModel(
     private val photosRepository: PhotosRepository
 ) : ViewModel() {
 
-    //private val photoId: Int = checkNotNull(savedStateHandle[InspectPhotoScreenDestination.itemIdArg])
 
     var photoUiState by mutableStateOf(PhotoUiState())
         private set
@@ -40,13 +39,8 @@ class PhotoViewModel(
         uri = uri
     )
 
-    fun updateUiState(photoDetails: PhotoDetails) {
-        photoUiState =
-            PhotoUiState(photoDetails = photoDetails)
 
-    }
-
-    suspend fun savePhoto(plantId: Int, uri: String) {
+    suspend fun savePhoto(plantId: Int, uri: String, plantName: String) {
         var newUri = uri
         if (uri.contains("picker")) {
             newUri = "content://media/external/images/media/" + extractNumbers(uri)

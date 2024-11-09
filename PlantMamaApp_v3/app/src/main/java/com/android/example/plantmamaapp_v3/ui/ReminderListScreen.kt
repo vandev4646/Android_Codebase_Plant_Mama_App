@@ -29,10 +29,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.work.WorkManager
 import com.android.example.plantmamaapp_v3.R
 import com.android.example.plantmamaapp_v3.data.Reminder
 import kotlinx.coroutines.launch
@@ -75,20 +77,27 @@ private fun ReminderList(
 
     ) {
     val coroutineScope = rememberCoroutineScope()
+
     LazyColumn(
         modifier = modifier,
-        // contentPadding = contentPadding
     ) {
         items(items = reminderList, key = { it.id }) { item ->
             ReminderItem(reminder = item,
                 modifier = Modifier
                     .padding(dimensionResource(id = R.dimen.padding_small)),
                 onClick = {
-                    coroutineScope.launch { deleteReminderViewModel.deleteReminder(item) }
+
+                        coroutineScope.launch {
+                            deleteReminderViewModel.deleteReminder(item)
+                            deleteReminderViewModel.waterRepository.deleteReminder(item.wmIdentifier)
+                        }
+
                 })
         }
     }
 }
+
+
 
 
 @Composable
@@ -97,6 +106,7 @@ private fun ReminderItem(
     modifier: Modifier = Modifier,
     onClick:() -> Unit = {}
 ) {
+
     Card(
         modifier = modifier, elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
@@ -121,7 +131,8 @@ private fun ReminderItem(
                 DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
                     DropdownMenuItem(
                         text = { Text("Delete") },
-                        onClick = { onClick() },
+                        onClick = { onClick()
+                                  },
                         leadingIcon = { Icon(Icons.Outlined.Delete, contentDescription = null) }
                     )
                 }
@@ -141,8 +152,6 @@ private fun ReminderItem(
                 )
 
             }
-
-
 
         }
 

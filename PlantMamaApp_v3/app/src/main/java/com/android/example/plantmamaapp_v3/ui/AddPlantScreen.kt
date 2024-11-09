@@ -62,7 +62,7 @@ fun AddPlant(
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(500.dp)
+                .height(550.dp)
                 .padding(16.dp),
             shape = RoundedCornerShape(16.dp),
         ) {
@@ -165,6 +165,7 @@ fun AddPlant(
                 OutlinedTextField(
                     value = plantUiState.plantDetails.description,
                     singleLine = false,
+                    maxLines = 2,
                     shape = MaterialTheme.shapes.small,
                     modifier = Modifier.fillMaxWidth(0.9f),
                     colors = TextFieldDefaults.colors(
@@ -179,7 +180,7 @@ fun AddPlant(
                             )
                         )
                     },
-                    label = { Text("Description") },
+                    label = { Text("Notes") },
                     isError = false,
                     keyboardOptions = KeyboardOptions.Default.copy(
                         imeAction = ImeAction.Done

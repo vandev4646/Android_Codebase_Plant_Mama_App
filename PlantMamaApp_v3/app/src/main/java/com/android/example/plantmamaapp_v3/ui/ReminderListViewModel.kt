@@ -21,8 +21,6 @@ class ReminderListViewModel(
 
     private val plantID: Int = checkNotNull(savedStateHandle[PlantProfileDestination.itemIdArg])
 
-    //var plantId = 0
-
     /**
      * Holds reminder list ui state. The list of items are retrieved from [ReminderRepository] and mapped to
      * [ReminderListUiState]

@@ -11,6 +11,8 @@ interface ReminderRepository {
      */
     fun getAllRemindersStream(plantId: Int): Flow<List<Reminder>>
 
+    suspend fun getAllRemindersNonStream(plantId: Int): List<Reminder>
+
     /**
      * Retrieve an item from the given data source that matches with the [id].
      */

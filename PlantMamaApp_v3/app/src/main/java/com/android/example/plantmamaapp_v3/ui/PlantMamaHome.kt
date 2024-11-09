@@ -45,6 +45,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -89,18 +91,30 @@ fun PlantGridScreen(
 
         content = { contentPadding ->
 
-            LazyVerticalGrid(
-                columns = GridCells.Adaptive(minSize = 125.dp),
-                modifier = modifier.padding(horizontal = 4.dp),
-                contentPadding = contentPadding,
-            ) {
-                items(items = plants) {
-                    plantItem(
-                        plant = it,
-                        navController = navController,
-                        viewModel = viewModel
-                    )
+            if(plants.isEmpty()){
+                Spacer(modifier = Modifier.size(dimensionResource(R.dimen.padding_large)))
+                Text(
+                    text = "Welcome! You currently do not have any plants listed. Click + to add one. Then click on the newly created plant to add reminders and photos",
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.padding(contentPadding),
+                )
+            }
+            else{
+                LazyVerticalGrid(
+                    columns = GridCells.Adaptive(minSize = 125.dp, ),
+                    modifier = modifier.padding(horizontal = 4.dp),
+                    contentPadding = contentPadding,
+                ) {
+                    items(items = plants) {
+                        plantItem(
+                            plant = it,
+                            navController = navController,
+                            viewModel = viewModel
+                        )
+                    }
                 }
+
             }
 
             if (showAddPlantDialog) {
@@ -177,7 +191,7 @@ fun plantItem(
                         .aspectRatio(1F),
                     contentScale = ContentScale.FillWidth,
                 )
-                Text(plant.name)
+                Text(plant.name, maxLines = 1, overflow = TextOverflow.Ellipsis)
 
             }
         }
@@ -282,30 +296,4 @@ fun ImageCard(
 
 }
 
-@Preview
-@Composable
-fun ScreenPreview() {
-    PLantMamaTheme {
-        //PlantMamaApp()
 
-    }
-}
-
-@Preview
-@Composable
-fun PlantGridScreenPreview() {
-    PLantMamaTheme {
-        // PlantGridScreen(plants = plants, imageOnClick = {})
-    }
-}
-
-@Preview
-@Composable
-fun cardPrview() {
-    PLantMamaTheme {
-        val painter = painterResource(id = R.drawable.forever_plant)
-        val description = "Forever Plant"
-        val title = "Forever Plant"
-        ImageCard(painter = painter, contentDescription = description, title = title)
-    }
-}

@@ -16,10 +16,10 @@ interface PlantDao {
     @Query("SELECT * from plants ORDER BY name ASC")
     fun getAllItems(): Flow<List<Plant>>
 
-    @Query("SELECT * from plants WHERE name = :id")
+    @Query("SELECT * from plants WHERE id = :id")
     fun getItem(id: Int): Flow<Plant>
 
-    @Query("SELECT * from plants WHERE name = :id")
+    @Query("SELECT * from plants WHERE id = :id")
     fun getPlantNonFlow(id: Int): Plant
 
     // Specify the conflict strategy as IGNORE, when the user tries to add an

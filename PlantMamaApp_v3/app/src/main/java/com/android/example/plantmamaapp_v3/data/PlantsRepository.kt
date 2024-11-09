@@ -16,6 +16,8 @@ interface PlantsRepository {
      */
     fun getPlantStream(id: Int): Flow<Plant?>
 
+    suspend fun getPlant(id: Int): Plant
+
     /**
      * Retrieve an item from the given data source that matches with the [id].
      */

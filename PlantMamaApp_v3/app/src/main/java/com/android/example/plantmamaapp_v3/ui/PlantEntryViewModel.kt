@@ -73,6 +73,7 @@ data class PlantUiState(
 )
 
 data class PlantDetails(
+    val id: Int = 0,
     val profilePic: String = "",
     val name: String = "",
     val age: String = "",
@@ -86,11 +87,12 @@ data class PlantDetails(
  * [ItemUiState] is not a valid [Int], then the quantity will be set to 0
  */
 fun PlantDetails.toItem(): Plant = Plant(
+    id = id,
     profilePic = profilePic,
     name = name,
     age = age.toIntOrNull() ?: 0,
     type = type,
-    description = description
+    notes = description
 )
 
 
@@ -106,9 +108,10 @@ fun Plant.toPlantUiState(isEntryValid: Boolean = false): PlantUiState = PlantUiS
  * Extension function to convert [Plant] to [PlantDetails]
  */
 fun Plant.toPlantDetails(): PlantDetails = PlantDetails(
+    id = id,
     profilePic = profilePic,
     name = name,
     age = age.toString(),
     type = type,
-    description = description
+    description = notes
 )

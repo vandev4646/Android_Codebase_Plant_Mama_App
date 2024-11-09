@@ -16,6 +16,8 @@ interface PhotosRepository {
      */
     fun getAllPhotoStreamByPlantId(plantId: Int): Flow<List<Photo>>
 
+    suspend fun getAllPhotoNonStreamByPlantId(plantId: Int): List<Photo>
+
     /**
      * Retrieve an item from the given data source that matches with the [id].
      */

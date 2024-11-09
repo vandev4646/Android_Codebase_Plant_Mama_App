@@ -11,5 +11,5 @@ data class Plant(
     val name: String,
     val age: Int,
     val type: String,
-    val description: String,
+    val notes: String,
 )

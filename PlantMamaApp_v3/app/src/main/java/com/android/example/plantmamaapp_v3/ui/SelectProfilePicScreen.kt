@@ -45,7 +45,6 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 
-//class CameraMainScreen () : ComponentActivity(){
 object SelectProfilePicDestination : NavigationDestination {
     override val route = "select_profile_pic_start"
 }
@@ -77,9 +76,6 @@ fun SelectProfilePicScreen(
 
         }
     )
-
-
-    //CheckCameraPermission()
 
     BottomSheetScaffold(
         scaffoldState = scaffoldState,

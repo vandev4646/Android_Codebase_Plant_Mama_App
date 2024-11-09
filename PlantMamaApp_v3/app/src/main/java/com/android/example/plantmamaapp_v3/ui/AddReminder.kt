@@ -1,6 +1,10 @@
 package com.android.example.plantmamaapp_v3.ui
 
+import android.content.pm.PackageManager
 import android.icu.util.Calendar
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,6 +30,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TimePickerState
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,18 +38,26 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
+import android.Manifest
+import android.util.Log
 import com.android.example.plantmamaapp_v3.R
 import com.android.example.plantmamaapp_v3.data.ReminderWM
 import kotlinx.coroutines.launch
 import java.lang.System.currentTimeMillis
 import java.text.SimpleDateFormat
+import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
+import java.time.ZoneId
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 
@@ -60,6 +73,8 @@ fun AddReminder(
     val coroutineScope = rememberCoroutineScope()
     val reminderUiState = reminderViewModel.reminderUiState
 
+    CheckReminderPermission()
+    reminderViewModel.updateUiState(reminderUiState.reminderDetails.copy(plantID = viewModel.currentPlant.id.toString()))
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -134,18 +149,22 @@ fun AddReminder(
                     onClick = {
                         val reminderIdentifier =
                             viewModel.currentPlant.name + currentTimeMillis().toString()
-                        val reminderWM = ReminderWM(
+                        var reminderWM = ReminderWM(
                             duration = totalDelay.toLong(),
-                            unit = TimeUnit.SECONDS,
+                            unit = TimeUnit.MINUTES,
                             plantName = viewModel.currentPlant.name,
+                            reminderTitle = reminderUiState.reminderDetails.title,
                             reminderIdentifier = reminderIdentifier
                         )
+
+                        reminderWM.reminderIdentifier = reminderIdentifier
+                        reminderViewModel.updateUiState(reminderUiState.reminderDetails.copy(plantID = viewModel.currentPlant.id.toString()))
                         reminderViewModel.updateUiState(
                             reminderUiState.reminderDetails.copy(
                                 wmIdentifier = reminderIdentifier
                             )
                         )
-                        reminderViewModel.updateUiState(reminderUiState.reminderDetails.copy(plantID = viewModel.currentPlant.id.toString()))
+
                         viewModel.scheduleReminder(reminderWM)
                         coroutineScope.launch {
                             reminderViewModel.saveItem()
@@ -165,13 +184,21 @@ fun AddReminder(
 
 @Composable
 fun DateTimePickerComponent(reminderViewModel: ReminderEntryViewModel = viewModel(factory = AppViewModelProvider.Factory)) {
-    //shores the date chosen
-    val date = remember {
-        Calendar.getInstance().apply {
-        }.timeInMillis
+
+    fun getCurrentDateInMillisUTC(): Long {
+        val currentDate = LocalDate.now(ZoneOffset.UTC)
+        return currentDate.atStartOfDay(ZoneOffset.UTC).toInstant().toEpochMilli()
     }
+
+    fun formatDateFromMillisUTC(millis: Long): String {
+        val date = Instant.ofEpochMilli(millis).atZone(ZoneOffset.UTC).toLocalDate()
+        val formatter = DateTimeFormatter.ofPattern("MMM dd yyyy", Locale.getDefault())
+        return date.format(formatter)
+    }
+    val initialSelectedDateMillis = getCurrentDateInMillisUTC()
+
     val datePickerState = rememberDatePickerState(
-        initialSelectedDateMillis = date,
+        initialSelectedDateMillis = getCurrentDateInMillisUTC(),
         yearRange = 2024..2030,
     )
 
@@ -184,7 +211,6 @@ fun DateTimePickerComponent(reminderViewModel: ReminderEntryViewModel = viewMode
     var selectedTime: TimePickerState? by remember { mutableStateOf(null) }
 
     val formatter = remember { SimpleDateFormat("hh:mm a", Locale.getDefault()) }
-    val dateFormatter = remember { SimpleDateFormat("MMM dd yyyy", Locale.getDefault()) }
 
     val yearFormatter = remember { SimpleDateFormat("yyyy", Locale.getDefault()) }
     val monthFormatter = remember { SimpleDateFormat("MM", Locale.getDefault()) }
@@ -202,6 +228,7 @@ fun DateTimePickerComponent(reminderViewModel: ReminderEntryViewModel = viewMode
     var delayHourS: Int = 0
     var delayMinS: Int = 0
 
+
     var pastDate by remember {
         mutableStateOf(false)
     }
@@ -211,6 +238,8 @@ fun DateTimePickerComponent(reminderViewModel: ReminderEntryViewModel = viewMode
     }
 
     val reminderUiState = reminderViewModel.reminderUiState
+
+
 
     Column(
         modifier = Modifier
@@ -225,14 +254,17 @@ fun DateTimePickerComponent(reminderViewModel: ReminderEntryViewModel = viewMode
             Button(
                 onClick = {
                     if (pastDate) {
-                        totalDelay -= delayYearS - delayMonthS - delayDayS
+                        totalDelay = delayYearS - delayMonthS - delayDayS
+                        delayYearS = 0
+                        delayMonthS = 0
+                        delayDayS = 0
                     }
                     showDatePicker = true //changing the visibility state
                 },
                 modifier = Modifier.fillMaxWidth(0.5f),
             ) {
                 if (dateSelected) {
-                    Text(text = dateFormatter.format(datePickerState.selectedDateMillis))
+                    Text(text = formatDateFromMillisUTC(datePickerState.selectedDateMillis ?: initialSelectedDateMillis))
                 } else
                     Text(text = "Choose Date")
             }
@@ -246,18 +278,18 @@ fun DateTimePickerComponent(reminderViewModel: ReminderEntryViewModel = viewMode
 
             Button(
                 onClick = {
+                    Log.d("DEBUG", "Button clicked")
                     if (pastTime) {
                         totalDelay -= delayHourS - delayMinS
+                        delayHourS = 0
+                        delayMinS = 0
                     }
                     showAdvancedExample = true
                 },
                 modifier = Modifier.fillMaxWidth(0.5f),
             ) {
                 if (selectedTime != null) {
-                    delayHourS =
-                        ((selectedTime!!.hour - currentHour) * 3600.4566211200049111).toInt()
-                    delayMinS = (selectedTime!!.minute - currentMin) * 60
-                    totalDelay += delayHourS + delayMinS
+
                     val cal = java.util.Calendar.getInstance()
                     cal.set(java.util.Calendar.HOUR_OF_DAY, selectedTime!!.hour)
                     cal.set(java.util.Calendar.MINUTE, selectedTime!!.minute)
@@ -284,23 +316,24 @@ fun DateTimePickerComponent(reminderViewModel: ReminderEntryViewModel = viewMode
                 TextButton(
                     onClick = {
                         delayYearS = ((yearFormatter.format(datePickerState.selectedDateMillis)
-                            .toInt() - currentYear) * 3.154e+7).toInt()
+                            .toInt() - currentYear) * 525600).toInt()
                         delayMonthS = ((monthFormatter.format(datePickerState.selectedDateMillis)
-                            .toInt() - currentMonth) * 2628336.2137829).toInt()
+                            .toInt() - currentMonth) * 43800).toInt()
                         delayDayS = ((dayFormatter.format(datePickerState.selectedDateMillis)
-                            .toInt() - currentDay) * 86410.958906880114228).toInt()
+                            .toInt() - (currentDay-1)) * 1440).toInt()
 
-                        if ((dateSelected)) {
-                            totalDelay += delayHourS + delayMinS
+                       // if ((dateSelected)) {
+                            totalDelay += delayDayS + delayMonthS + delayYearS
+                        delayYearS = 0
+                        delayMonthS = 0
+                        delayDayS = 0
 
-                        }
+                       // }
                         pastDate = true
                         dateSelected = true
                         reminderViewModel.updateUiState(
                             reminderUiState.reminderDetails.copy(
-                                date = dateFormatter.format(
-                                    datePickerState.selectedDateMillis
-                                )
+                                date = formatDateFromMillisUTC(datePickerState.selectedDateMillis ?: initialSelectedDateMillis)
                             )
                         )
                         showDatePicker = false
@@ -327,11 +360,60 @@ fun DateTimePickerComponent(reminderViewModel: ReminderEntryViewModel = viewMode
             onDismiss = { showAdvancedExample = false },
             onConfirm = { time ->
                 selectedTime = time
+                delayHourS =
+                    ((selectedTime!!.hour - currentHour) * 60).toInt()
+                delayMinS = (selectedTime!!.minute - currentMin)
+
+                totalDelay += ((delayHourS + delayMinS))
+
+                delayHourS = 0
+                delayMinS = 0
                 showAdvancedExample = false
             },
         )
     }
 
 }
+
+//Copilot suggested this code.
+@Composable
+fun CheckReminderPermission(){
+    val context = LocalContext.current
+    var hasNotificationPermission by remember { mutableStateOf(false) }
+
+    val notificationPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        hasNotificationPermission = isGranted
+    }
+
+    LaunchedEffect(Unit) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            when (ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS)) {
+                PackageManager.PERMISSION_GRANTED -> {
+                    hasNotificationPermission = true
+                }
+                else -> {
+                    notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                }
+            }
+        } else {
+            hasNotificationPermission = true
+        }
+    }
+
+    if (hasNotificationPermission) {
+        // Your code to send notifications
+        Text("Notification permission granted")
+    } else {
+        Text("Requesting notification permission...")
+    }
+}
+
+
+
+
+
+
 
 

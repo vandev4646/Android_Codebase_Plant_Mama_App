@@ -6,6 +6,9 @@ class OfflineRemindersRepository(private val reminderDao: ReminderDao) : Reminde
     override fun getAllRemindersStream(plantId: Int): Flow<List<Reminder>> =
         reminderDao.getAllItems(plantId)
 
+    override suspend fun getAllRemindersNonStream(plantId: Int): List<Reminder> =
+        reminderDao.getAllItemsNonFlow(plantId)
+
     override fun getReminderStream(id: Int): Flow<Reminder?> = reminderDao.getItem(id)
 
     override suspend fun insertReminder(reminder: Reminder) = reminderDao.insert(reminder)

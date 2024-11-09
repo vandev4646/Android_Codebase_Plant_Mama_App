@@ -19,7 +19,8 @@ data class ReminderWM(
     val duration: Long,
     val unit: TimeUnit,
     val plantName: String,
-    val reminderIdentifier: String,
+    val reminderTitle: String,
+    var reminderIdentifier: String,
 )
 
 

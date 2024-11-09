@@ -62,7 +62,8 @@ fun PlantMamaApp(
             SelectedPhotoScreen(
                 viewModel = viewModel,
                 onCancel = { navController.navigate("${PlantProfileDestination.route}/${viewModel.currentPlant.id}") },
-                plantId = viewModel.currentPlant.id
+                plantId = viewModel.currentPlant.id,
+                plantName = viewModel.currentPlant.name
             )
 
         }
@@ -72,7 +73,8 @@ fun PlantMamaApp(
             SelectedSinglePhotoScreen(
                 uri = viewModel.currentUri,
                 onCancel = { navController.navigate("${PlantProfileDestination.route}/${viewModel.currentPlant.id}") },
-                plantId = viewModel.currentPlant.id
+                plantId = viewModel.currentPlant.id,
+                plantName = viewModel.currentPlant.name
             )
 
         }
@@ -102,7 +104,18 @@ fun PlantMamaApp(
         ) {
             PlantEditScreen(
                 navigateBack = { navController.popBackStack() },
-                onNavigateUp = { navController.navigateUp() }
+                onNavigateUp = { navController.navigateUp() },
+                navigateHome = {
+                    navController.popBackStack()
+                    navController.popBackStack()
+                    navController.navigate(PlantMamaHomeDesintation.route)
+                },
+                onProfilePicClick = {
+                    viewModel.cameraForProfile = true
+                    viewModel.newProfilePicSelected = true
+                    navController.navigate(CameraStartDestination.route)
+                },
+                viewModel2 = viewModel
             )
         }
     }

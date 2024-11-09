@@ -19,6 +19,9 @@ interface PhotoDao {
     @Query("SELECT * from photos WHERE plantId = :plantId")
     fun getAllItemsbyPlantId(plantId: Int): Flow<List<Photo>>
 
+    @Query("SELECT * from photos WHERE plantId = :plantId")
+    suspend fun getAllPlantsNonFlow(plantId: Int): List<Photo>
+
     @Query("SELECT * from photos WHERE id = :id")
     fun getItem(id: Int): Flow<Photo>
 

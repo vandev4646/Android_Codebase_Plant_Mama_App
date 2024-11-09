@@ -33,7 +33,7 @@ fun PhotoDisplay(
 
     if (photoList.isEmpty()) {
         Text(
-            text = "No items so sad",
+            text = "Oops! No photos are added yet for this plant. Tap the camera icon above to add a reminder",
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.titleLarge,
             modifier = Modifier,

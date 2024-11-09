@@ -3,7 +3,9 @@ package com.android.example.plantmamaapp_v3.ui
 import android.Manifest
 import android.content.ContentValues
 import android.content.Context
+import android.net.Uri
 import android.os.Build
+import android.os.Environment
 import android.provider.MediaStore
 import android.util.Log
 import android.widget.Toast
@@ -33,7 +35,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -47,6 +52,9 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import com.google.accompanist.permissions.shouldShowRationale
+import java.io.File
+import java.io.FileOutputStream
+import java.io.InputStream
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -64,6 +72,8 @@ fun StartMainCamera(
     val scaffoldState = rememberBottomSheetScaffoldState()
     val context = LocalContext.current
 
+    var selectedImageUris by remember { mutableStateOf<List<Uri>>(emptyList()) }
+
     val controller = remember {
         LifecycleCameraController(context).apply {
             setEnabledUseCases(
@@ -75,8 +85,15 @@ fun StartMainCamera(
 
     val multiplePhotoPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickMultipleVisualMedia(),
-        onResult = { uris ->
-            viewModelPlantMamaMainScreen.selectedImagesUris = uris
+        onResult = { uris: List<Uri> ->
+            val mutableUris = selectedImageUris.toMutableList()
+
+            uris.forEach{ uri ->
+                mutableUris.add(saveImageToNewFolder(context, uri))
+                //selectedImageUris.plusElement(saveImageToNewFolder(context, uri))
+            }
+            selectedImageUris = mutableUris
+            viewModelPlantMamaMainScreen.selectedImagesUris = selectedImageUris
             navController.navigate(SelectedPhotoScreenDestination.route)
 
         }
@@ -86,7 +103,7 @@ fun StartMainCamera(
         contract = ActivityResultContracts.PickVisualMedia(),
         onResult = { uri ->
             if (uri != null) {
-                viewModelPlantMamaMainScreen.currentUri = uri
+                viewModelPlantMamaMainScreen.currentUri = saveImageToNewFolder(context, uri)
             }
             navController.popBackStack()
         }
@@ -247,9 +264,6 @@ private fun takePhoto(
         ContextCompat.getMainExecutor(context),
         object : ImageCapture.OnImageSavedCallback {
             override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-                val msg = "Photo capture succeded: ${outputFileResults.savedUri}"
-                Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
-                Log.d(TAG, msg)
                 viewModelPlantMamaMainScreen.selectedImagesUris.plusElement(outputFileResults.savedUri)
                 viewModelPlantMamaMainScreen.currentUri = outputFileResults.savedUri!!
                 navigationAfter()
@@ -285,6 +299,25 @@ fun CheckCameraPermission() {
             requestLauncher.launch(Manifest.permission.CAMERA)
         }
     }
+}
+
+
+fun saveImageToNewFolder(context: Context, uri: Uri): Uri {
+    val inputStream: InputStream? = context.contentResolver.openInputStream(uri)
+    val newFile = File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "Plant_Mama")
+    if (!newFile.exists()) {
+        newFile.mkdirs()
+    }
+    val fileName = "${System.currentTimeMillis()}.jpg"
+    val outputFile = File(newFile, fileName)
+    val outputStream = FileOutputStream(outputFile)
+
+    inputStream?.use { input ->
+        outputStream.use { output ->
+            input.copyTo(output)
+        }
+    }
+    return Uri.fromFile(outputFile)
 }
 
 

@@ -60,14 +60,17 @@ object AppViewModelProvider {
         initializer {
             PlantEditViewModel(
                 this.createSavedStateHandle(),
-                plantMamaApplication().container.plantsRepository
+                plantMamaApplication().container.plantsRepository,
+                plantMamaApplication().container.reminderRepository,
+                plantMamaApplication().container.photosRepository
             )
         }
 
         initializer {
             DeleteReminderViewModel(
                 this.createSavedStateHandle(),
-                plantMamaApplication().container.reminderRepository
+                plantMamaApplication().container.reminderRepository,
+                plantMamaApplication().container.waterRepository
             )
         }
     }

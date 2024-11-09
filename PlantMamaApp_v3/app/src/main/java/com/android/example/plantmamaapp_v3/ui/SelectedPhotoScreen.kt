@@ -36,7 +36,8 @@ fun SelectedPhotoScreen(
     viewModel: PlantMamaMainScreenViewModel = viewModel(factory = AppViewModelProvider.Factory),
     photoViewModel: PhotoViewModel = viewModel(factory = AppViewModelProvider.Factory),
     onCancel: () -> Unit = {},
-    plantId: Int
+    plantId: Int,
+    plantName: String
 ) {
 
     var selectedImagesUris = remember {
@@ -67,7 +68,7 @@ fun SelectedPhotoScreen(
 
                 selectedImagesUris.forEach { uri ->
                     coroutineScope.launch {
-                        photoViewModel.savePhoto(plantId, uri.toString())
+                        photoViewModel.savePhoto(plantId, uri.toString(), plantName)
                     }
                 }
 
@@ -91,7 +92,8 @@ fun SelectedSinglePhotoScreen(
     uri: Uri,
     photoViewModel: PhotoViewModel = viewModel(factory = AppViewModelProvider.Factory),
     onCancel: () -> Unit = {},
-    plantId: Int
+    plantId: Int,
+    plantName: String
 ) {
 
     val coroutineScope = rememberCoroutineScope()
@@ -109,7 +111,7 @@ fun SelectedSinglePhotoScreen(
         ) {
             Button(onClick = {
                 coroutineScope.launch {
-                    photoViewModel.savePhoto(plantId, uri.toString())
+                    photoViewModel.savePhoto(plantId, uri.toString(), plantName = plantName)
                 }
                 onCancel()
 

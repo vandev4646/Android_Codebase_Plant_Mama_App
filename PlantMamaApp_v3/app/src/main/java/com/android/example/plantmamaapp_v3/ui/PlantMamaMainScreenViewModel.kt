@@ -28,6 +28,8 @@ class PlantMamaMainScreenViewModel(
 
     var cameraForProfile = false
 
+    var newProfilePicSelected = false
+
 
     //Information from the Water Me app for the reminder schedule
     //WAS CAUSING CRASHES SO I COMMEMENTED IT OUT. WILL NEED TO MAKE SURE THIS ISN'T NEEDED IN THE FUTURE
@@ -38,6 +40,7 @@ class PlantMamaMainScreenViewModel(
             reminderWM.duration,
             reminderWM.unit,
             reminderWM.plantName,
+            reminderWM.reminderTitle,
             reminderWM.reminderIdentifier
         )
     }

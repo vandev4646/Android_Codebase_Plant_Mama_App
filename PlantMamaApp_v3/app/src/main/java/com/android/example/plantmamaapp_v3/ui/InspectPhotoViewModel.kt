@@ -34,16 +34,6 @@ class InspectPhotoViewModel(
             initialValue = PhotoViewUiState()
         )
 
-    /*
-    val photoViewUiState: StateFlow<PhotoViewUiState> =
-        photosRepository.getPhotoStream(photoId).map { PhotoViewUiState(it!!) }
-            .stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
-                initialValue = PhotoViewUiState()
-            )
-
-     */
 
     companion object {
         private const val TIMEOUT_MILLIS = 5_000L

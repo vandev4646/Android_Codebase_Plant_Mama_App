@@ -8,6 +8,9 @@ class OfflinePhotoRepository(private val photoDao: PhotoDao) : PhotosRepository 
     override fun getAllPhotoStreamByPlantId(plantId: Int): Flow<List<Photo>> =
         photoDao.getAllItemsbyPlantId(plantId)
 
+    override suspend fun getAllPhotoNonStreamByPlantId(plantId: Int): List<Photo> =
+        photoDao.getAllPlantsNonFlow(plantId)
+
     override fun getPhotoStream(id: Int): Flow<Photo?> = photoDao.getItem(id)
 
     override suspend fun insertPhoto(photo: Photo) = photoDao.insert(photo)

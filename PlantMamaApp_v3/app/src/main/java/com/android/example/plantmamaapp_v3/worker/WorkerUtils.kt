@@ -21,6 +21,7 @@ import com.android.example.plantmamaapp_v3.VERBOSE_NOTIFICATION_CHANNEL_NAME
 
 fun makePlantReminderNotification(
     message: String,
+    title: String,
     context: Context
 ) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -44,7 +45,7 @@ fun makePlantReminderNotification(
 
     val builder = NotificationCompat.Builder(context, CHANNEL_ID)
         .setSmallIcon(R.drawable.ic_launcher_foreground)
-        .setContentTitle(NOTIFICATION_TITLE)
+        .setContentTitle(title)
         .setContentText(message)
         .setPriority(NotificationCompat.PRIORITY_HIGH)
         .setVibrate(LongArray(0))
