@@ -2,8 +2,8 @@
 
 plugins {
     id("com.android.application")
-    id("com.google.devtools.ksp") version "1.9.0-1.0.13"
-    id("org.jetbrains.kotlin.android")
+    id("com.google.devtools.ksp") version "1.9.24-1.0.20"
+    id("org.jetbrains.kotlin.android") version "1.9.24"
     id("androidx.navigation.safeargs.kotlin")
 }
 
@@ -12,10 +12,10 @@ android {
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.android.example.plantmamaapp_v3"
+        applicationId = "com.plantmamaapp_v3"
         minSdk = 26
         targetSdk = 34
-        versionCode = 1
+        versionCode = 2
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -47,7 +47,7 @@ android {
         viewBinding = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.3"
+        kotlinCompilerExtensionVersion = "1.5.14"
     }
     packaging {
         resources {
@@ -113,7 +113,7 @@ dependencies {
     implementation ("androidx.room:room-ktx:$room_version")
 
 
-    val nav_version = "2.7.7"
+    val nav_version = "2.8.3"
 
     // Kotlin
     implementation("androidx.navigation:navigation-fragment-ktx:$nav_version")
