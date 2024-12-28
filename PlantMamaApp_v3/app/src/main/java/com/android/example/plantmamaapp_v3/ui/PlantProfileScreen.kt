@@ -192,6 +192,7 @@ fun PlantProfleMain(
             }
 
             if (showAddReminderDialog) {
+                Spacer(modifier = Modifier.size(dimensionResource(R.dimen.padding_small)))
                 AddReminder(
                     onDismissRequest = { showAddReminderDialog = false },
                     onConfirmation = { showAddReminderDialog = false },

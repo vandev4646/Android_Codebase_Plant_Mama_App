@@ -41,7 +41,8 @@ class PlantMamaMainScreenViewModel(
             reminderWM.unit,
             reminderWM.plantName,
             reminderWM.reminderTitle,
-            reminderWM.reminderIdentifier
+            reminderWM.reminderIdentifier,
+            reminderWM.recurrence
         )
     }
 

@@ -2,8 +2,12 @@ package com.android.example.plantmamaapp_v3.data
 
 import android.content.Context
 import androidx.work.Data
+import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequest
 import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.PeriodicWorkRequest
+import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.workDataOf
 import com.android.example.plantmamaapp_v3.worker.DeleteRecordWorker
@@ -21,33 +25,63 @@ class WorkManagerWaterRepository(context: Context) : WaterRepository {
         unit: TimeUnit,
         plantName: String,
         reminderTitle: String,
-        reminderIdentifier: String
+        reminderIdentifier: String,
+        recurrence: Recurrence
     ) {
+
         val data = Data.Builder()
-        data.putString(WaterReminderWorker.nameKey, plantName)
-        data.putString(WaterReminderWorker.reminderTitle, reminderTitle)
-
-        val workRequestBuilder = OneTimeWorkRequestBuilder<WaterReminderWorker>()
-            .setInitialDelay(duration, unit)
-            .setInputData(data.build())
+            .putString(WaterReminderWorker.nameKey, plantName)
+            .putString(WaterReminderWorker.reminderTitle, reminderTitle)
             .build()
 
-        val deleteRecordWork = OneTimeWorkRequestBuilder<DeleteRecordWorker>()
-            .setInputData(workDataOf("reminder_id" to reminderIdentifier))
-            .build()
+        val workRequest = when (recurrence) {
+            Recurrence.ONCE -> {
+                OneTimeWorkRequestBuilder<WaterReminderWorker>()
+                    .setInitialDelay(duration, unit)
+                    .setInputData(data)
+                    .build()
+            }
+            else -> {
+                PeriodicWorkRequestBuilder<WaterReminderWorker>(
+                    when (recurrence) {
+                        Recurrence.DAILY -> 1
+                        Recurrence.WEEKLY -> 7
+                        Recurrence.MONTHLY -> 30 // approximate
+                        Recurrence.YEARLY -> 365 // approximate
+                        else -> 1 // default to daily if unknown
+                    }, TimeUnit.DAYS
+                )
+                    .setInitialDelay(duration, unit)
+                    .setInputData(data)
+                    .build()
+            }
+        }
 
-        workManager.beginUniqueWork(
-            reminderIdentifier,
-            ExistingWorkPolicy.REPLACE,
-            workRequestBuilder
-        )
-            .then(deleteRecordWork)
-            .enqueue()
+        if (recurrence == Recurrence.ONCE) {
+            val deleteRecordWork = OneTimeWorkRequestBuilder<DeleteRecordWorker>()
+                .setInputData(workDataOf("reminder_id" to reminderIdentifier))
+                .build()
+
+            workManager.beginUniqueWork(
+                reminderIdentifier,
+                ExistingWorkPolicy.REPLACE,
+                (workRequest as OneTimeWorkRequest)
+            )
+                .then(deleteRecordWork)
+                .enqueue()
+        } else {
+            workManager.enqueueUniquePeriodicWork(
+                reminderIdentifier,
+                ExistingPeriodicWorkPolicy.UPDATE,
+                (workRequest as PeriodicWorkRequest)
+            )
+        }
+
 
 
     }
 
-    override fun deleteReminder(reminderIdentifier: String){
+    override fun deleteReminder(reminderIdentifier: String) {
 
         workManager.cancelAllWorkByTag(reminderIdentifier)
         workManager.cancelUniqueWork(reminderIdentifier)

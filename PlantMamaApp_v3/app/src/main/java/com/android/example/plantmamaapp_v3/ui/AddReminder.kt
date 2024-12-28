@@ -1,15 +1,19 @@
 package com.android.example.plantmamaapp_v3.ui
 
+import android.Manifest
 import android.content.pm.PackageManager
-import android.icu.util.Calendar
 import android.os.Build
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -17,11 +21,16 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.Divider
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -45,9 +54,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
-import android.Manifest
-import android.util.Log
 import com.android.example.plantmamaapp_v3.R
+import com.android.example.plantmamaapp_v3.data.Recurrence
 import com.android.example.plantmamaapp_v3.data.ReminderWM
 import kotlinx.coroutines.launch
 import java.lang.System.currentTimeMillis
@@ -55,7 +63,6 @@ import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalTime
-import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -73,32 +80,34 @@ fun AddReminder(
     val coroutineScope = rememberCoroutineScope()
     val reminderUiState = reminderViewModel.reminderUiState
 
+    var expanded by remember { mutableStateOf(false) }
+    var selectedRecurrence by remember { mutableStateOf(Recurrence.ONCE) }
+    val recurrenceOptions = Recurrence.values().toList()
+
     CheckReminderPermission()
     reminderViewModel.updateUiState(reminderUiState.reminderDetails.copy(plantID = viewModel.currentPlant.id.toString()))
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .height(500.dp)
+            .height(650.dp)
             .padding(16.dp),
         shape = RoundedCornerShape(16.dp),
     ) {
 
+        Spacer(modifier = Modifier.size(dimensionResource(R.dimen.padding_large)))
+
+
         Column(
             modifier = Modifier
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(
                 text = stringResource(R.string.add_reminder),
                 modifier = Modifier.padding(16.dp),
-                style = MaterialTheme.typography.labelLarge
+                style = MaterialTheme.typography.titleMedium
             )
-        }
-
-        Column(
-            modifier = Modifier
-                .fillMaxWidth(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
 
             OutlinedTextField(
                 value = reminderUiState.reminderDetails.title,
@@ -111,11 +120,14 @@ fun AddReminder(
                     disabledContainerColor = MaterialTheme.colorScheme.surface,
                 ),
                 onValueChange = {
-                    reminderViewModel.updateUiState(
-                        reminderUiState.reminderDetails.copy(
-                            title = it
+                    if (it.isNotBlank()) {
+                        reminderViewModel.updateUiState(
+                            reminderUiState.reminderDetails.copy(
+                                title = it
+                            )
                         )
-                    )
+                    }
+
                 },
                 label = {
                     Text("Reminder Name*")
@@ -128,11 +140,38 @@ fun AddReminder(
                     onDone = { }
                 )
             )
-            Spacer(modifier = Modifier.size(dimensionResource(R.dimen.padding_medium)))
+            Spacer(modifier = Modifier.size(dimensionResource(R.dimen.padding_small)))
 
             DateTimePickerComponent()
 
-            Spacer(modifier = Modifier.size(dimensionResource(R.dimen.padding_medium)))
+            // Dropdown menu for recurrence selection
+            Box {
+                OutlinedTextField(
+                    value = selectedRecurrence.name,
+                    onValueChange = {},
+                    label = { Text("Recurrence") },
+                    modifier = Modifier.fillMaxWidth(0.9f),
+                    readOnly = true,
+                    trailingIcon = {
+                        Icon(
+                            Icons.Default.ArrowDropDown,
+                            contentDescription = null,
+                            Modifier.clickable { expanded = true })
+                    })
+                DropdownMenu(expanded = expanded,
+                    onDismissRequest = { expanded = false }
+                ) {
+                    recurrenceOptions.forEach { option ->
+                        DropdownMenuItem(onClick = {
+                            selectedRecurrence = option
+                            expanded = false
+                        }, text = {Text(text = option.name)} )
+                    }
+                }
+            }
+
+
+            Spacer(modifier = Modifier.size(dimensionResource(R.dimen.padding_small)))
 
             Row(
                 modifier = Modifier
@@ -154,7 +193,8 @@ fun AddReminder(
                             unit = TimeUnit.MINUTES,
                             plantName = viewModel.currentPlant.name,
                             reminderTitle = reminderUiState.reminderDetails.title,
-                            reminderIdentifier = reminderIdentifier
+                            reminderIdentifier = reminderIdentifier,
+                            recurrence = selectedRecurrence
                         )
 
                         reminderWM.reminderIdentifier = reminderIdentifier
@@ -195,6 +235,7 @@ fun DateTimePickerComponent(reminderViewModel: ReminderEntryViewModel = viewMode
         val formatter = DateTimeFormatter.ofPattern("MMM dd yyyy", Locale.getDefault())
         return date.format(formatter)
     }
+
     val initialSelectedDateMillis = getCurrentDateInMillisUTC()
 
     val datePickerState = rememberDatePickerState(
@@ -244,7 +285,7 @@ fun DateTimePickerComponent(reminderViewModel: ReminderEntryViewModel = viewMode
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .fillMaxHeight(0.75f),
+            .fillMaxHeight(0.55f),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(24.dp),
     ) {
@@ -264,7 +305,11 @@ fun DateTimePickerComponent(reminderViewModel: ReminderEntryViewModel = viewMode
                 modifier = Modifier.fillMaxWidth(0.5f),
             ) {
                 if (dateSelected) {
-                    Text(text = formatDateFromMillisUTC(datePickerState.selectedDateMillis ?: initialSelectedDateMillis))
+                    Text(
+                        text = formatDateFromMillisUTC(
+                            datePickerState.selectedDateMillis ?: initialSelectedDateMillis
+                        )
+                    )
                 } else
                     Text(text = "Choose Date")
             }
@@ -320,20 +365,22 @@ fun DateTimePickerComponent(reminderViewModel: ReminderEntryViewModel = viewMode
                         delayMonthS = ((monthFormatter.format(datePickerState.selectedDateMillis)
                             .toInt() - currentMonth) * 43800).toInt()
                         delayDayS = ((dayFormatter.format(datePickerState.selectedDateMillis)
-                            .toInt() - (currentDay-1)) * 1440).toInt()
+                            .toInt() - (currentDay - 1)) * 1440).toInt()
 
-                       // if ((dateSelected)) {
-                            totalDelay += delayDayS + delayMonthS + delayYearS
+                        // if ((dateSelected)) {
+                        totalDelay += delayDayS + delayMonthS + delayYearS
                         delayYearS = 0
                         delayMonthS = 0
                         delayDayS = 0
 
-                       // }
+                        // }
                         pastDate = true
                         dateSelected = true
                         reminderViewModel.updateUiState(
                             reminderUiState.reminderDetails.copy(
-                                date = formatDateFromMillisUTC(datePickerState.selectedDateMillis ?: initialSelectedDateMillis)
+                                date = formatDateFromMillisUTC(
+                                    datePickerState.selectedDateMillis ?: initialSelectedDateMillis
+                                )
                             )
                         )
                         showDatePicker = false
@@ -377,7 +424,7 @@ fun DateTimePickerComponent(reminderViewModel: ReminderEntryViewModel = viewMode
 
 //Copilot suggested this code.
 @Composable
-fun CheckReminderPermission(){
+fun CheckReminderPermission() {
     val context = LocalContext.current
     var hasNotificationPermission by remember { mutableStateOf(false) }
 
@@ -389,10 +436,14 @@ fun CheckReminderPermission(){
 
     LaunchedEffect(Unit) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            when (ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS)) {
+            when (ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.POST_NOTIFICATIONS
+            )) {
                 PackageManager.PERMISSION_GRANTED -> {
                     hasNotificationPermission = true
                 }
+
                 else -> {
                     notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
                 }

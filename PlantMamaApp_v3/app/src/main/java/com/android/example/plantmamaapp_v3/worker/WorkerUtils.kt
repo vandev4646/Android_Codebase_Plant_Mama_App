@@ -52,7 +52,9 @@ fun makePlantReminderNotification(
         .setContentIntent(pendingIntent)
         .setAutoCancel(true)
 
-    NotificationManagerCompat.from(context).notify(NOTIFICATION_ID, builder.build())
+    // Generate a unique notification ID
+    val notificationId = (System.currentTimeMillis() % 10000).toInt()
+    NotificationManagerCompat.from(context).notify(notificationId, builder.build())
 }
 
 fun createPendingIntent(appContext: Context): PendingIntent {

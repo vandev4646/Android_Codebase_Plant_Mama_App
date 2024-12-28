@@ -9,7 +9,8 @@ interface WaterRepository {
         unit: TimeUnit,
         plantName: String,
         reminderTitle: String,
-        reminderIdentifier: String
+        reminderIdentifier: String,
+        recurrence: Recurrence
     )
 
     fun deleteReminder(

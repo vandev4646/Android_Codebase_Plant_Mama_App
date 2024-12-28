@@ -21,6 +21,7 @@ data class ReminderWM(
     val plantName: String,
     val reminderTitle: String,
     var reminderIdentifier: String,
+    val recurrence: Recurrence
 )
 
 
