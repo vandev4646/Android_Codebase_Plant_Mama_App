@@ -28,6 +28,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -73,6 +74,10 @@ fun PlantProfleMain(
     val currentPlant = viewModel.currentPlant
     viewModel.newProfilePicSelected = false
 
+    val photoDisplayViewModel: PhotoDisplayViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    val photoListUiState by photoDisplayViewModel.photoListUiState.collectAsState()
+    val photoList = photoListUiState.photoList
+
     Box(modifier = Modifier.fillMaxSize()){
         Image(
             painter = painterResource(id = R.drawable.menu_screen),
@@ -88,7 +93,7 @@ fun PlantProfleMain(
                 .fillMaxSize()
                 .padding(),
             topBar = {
-                profileTopBar(plant = currentPlant,
+                ProfileTopBar(plant = currentPlant,
                     canNavigateBack = navController.previousBackStackEntry != null,
                     navigateUp = {
                         navController.navigate(PlantMamaHomeDesintation.route)
@@ -119,7 +124,7 @@ fun PlantProfleMain(
                                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                                     contentColor = MaterialTheme.colorScheme.onPrimaryContainer
                                 )) {
-                                plantDetailsDisplay(plant = currentPlant)
+                                PlantDetailsDisplay(plant = currentPlant)
                             }
 
                         }
@@ -201,7 +206,7 @@ fun PlantProfleMain(
                     }
                     Spacer(modifier = Modifier.size(dimensionResource(R.dimen.padding_medium)))
                     if (selectedIndex == 0) {
-                        PhotoDisplay(navController = navController)
+                        PhotoDisplay(photoList, "Oops! No photos are added yet for this plant. Tap the camera icon above to add a photo", navController = navController)
                     }
 
                     if (selectedIndex == 1) {
@@ -237,74 +242,10 @@ fun PlantProfleMain(
 
 }
 
-@Composable
-fun profileTopBar(
-    plant: Plant,
-    canNavigateBack: Boolean,
-    navigateUp: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Surface(
-        modifier = modifier
-           .padding(start = 8.dp, end = 8.dp, bottom = 4.dp, top = 32.dp)
-           .fillMaxWidth(),
-       shape = RoundedCornerShape(8.dp),
-        //color = MaterialTheme.colorScheme.primaryContainer,
-        shadowElevation = 4.dp
-    ){
-        CenterAlignedTopAppBar(
-            title = { Text(plant.name + "'s Profile") },
-            colors = TopAppBarDefaults.topAppBarColors(MaterialTheme.colorScheme.primaryContainer),
-            windowInsets = WindowInsets(0, 0, 0, 0),
-            navigationIcon = {
-                if (canNavigateBack) {
-                    IconButton(onClick = navigateUp) {
-                        Icon(
-                            imageVector = Icons.Filled.ArrowBack,
-                            contentDescription = "Back"
-                        )
-                    }
-                }
-            },
-            actions = {
-                    Card(
-                        modifier = Modifier
-                            .padding( 8.dp)
-                            .size(40.dp),
-                        shape = RoundedCornerShape(8.dp),
-                        elevation = CardDefaults.cardElevation(0.dp)
-                    ){
-                        if (!plant.profilePic.equals("")) {
-                            AsyncImage(
-                                model = ImageRequest.Builder(LocalContext.current)
-                                    .data(plant.profilePic)
-                                    .placeholder(R.drawable.plant_logo)
-                                    .build(),
-                                contentDescription = "",
-                                modifier = Modifier.fillMaxSize(),
-                                contentScale = ContentScale.Crop,
-                            )
-                        } else {
-                            val painter = painterResource(R.drawable.plant_logo)
 
-                            val description = plant.name
-                            Image(
-                                painter = painter,
-                                contentDescription = description,
-                                modifier = Modifier.fillMaxSize(),
-                                contentScale = ContentScale.Crop
-                            )
-
-                        }
-                    }
-
-            }
-        )
-        }
-    }
 
 @Composable
-fun plantDetailsDisplay(plant: Plant) {
+fun PlantDetailsDisplay(plant: Plant) {
     val textMeasurer = rememberTextMeasurer()
     val density = LocalDensity.current
     val textHeight = with(density) {
@@ -366,7 +307,7 @@ fun PlantProfilePreview() {
                 .padding(8.dp)
         ) {
             // Mocking the TopBar
-            profileTopBar(
+            ProfileTopBar(
                 plant = mockPlant,
                 canNavigateBack = true,
                 navigateUp = {}
@@ -382,7 +323,7 @@ fun PlantProfilePreview() {
             ) {
                 Box(modifier = Modifier.fillMaxWidth(0.85f)) {
                     Card(modifier = Modifier.fillMaxSize()) {
-                        plantDetailsDisplay(plant = mockPlant)
+                        PlantDetailsDisplay(plant = mockPlant)
                     }
                 }
 

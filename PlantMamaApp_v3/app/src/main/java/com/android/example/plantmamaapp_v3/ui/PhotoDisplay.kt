@@ -2,11 +2,16 @@ package com.android.example.plantmamaapp_v3.ui
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,30 +27,34 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.android.example.plantmamaapp_v3.R
+import com.android.example.plantmamaapp_v3.data.Photo
 
 @Composable
 fun PhotoDisplay(
-    photoDisplayViewModel: PhotoDisplayViewModel = viewModel(factory = AppViewModelProvider.Factory),
-    navController: NavController
+    photoList: List<Photo>,
+    noPlantMessage: String,
+    navController: NavController,
+    modifier: Modifier = Modifier
 ) {
-    val photoListUiState by photoDisplayViewModel.photoListUiState.collectAsState()
-    val photoList = photoListUiState.photoList
+
 
     if (photoList.isEmpty()) {
-        Text(
-            text = "Oops! No photos are added yet for this plant. Tap the camera icon above to add a reminder",
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.titleLarge,
-            modifier = Modifier,
-        )
+        Column(modifier = modifier, verticalArrangement = Arrangement.Center) {
+            Text(
+                text = noPlantMessage,
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier,
+            )
+        }
     } else {
         LazyVerticalGrid(
-            columns = GridCells.Adaptive(minSize = 128.dp),
+            columns = GridCells.Adaptive(minSize = 150.dp),
             horizontalArrangement = Arrangement.spacedBy(2.dp),
             verticalArrangement = Arrangement.spacedBy(2.dp)
         ) {
             items(items = photoList, key = { it.id }) { item ->
-                displayPhotos(item.uri, navController = navController, photoId = item.id)
+                DisplayPhotos(item.uri, navController = navController, photoId = item.id)
             }
         }
     }
@@ -53,25 +62,34 @@ fun PhotoDisplay(
 
 
 @Composable
-fun displayPhotos(
+fun DisplayPhotos(
     uri: String,
     photoId: Int,
     viewModel: PlantMamaMainScreenViewModel = viewModel(factory = AppViewModelProvider.Factory),
     navController: NavController
 ) {
-    AsyncImage(
-        model = ImageRequest.Builder(LocalContext.current)
-            .data(uri)
-            .placeholder(R.drawable.plant_logo)
-            .build(),
-        contentDescription = "",
+    Card(
         modifier = Modifier
-            .padding(2.dp)
-            .fillMaxSize()
+            .padding(4.dp)
+            .aspectRatio(1f)
             .clickable {
                 viewModel.deletePhotoPath = uri
                 navController.navigate("${InspectPhotoScreenDestination.route}/${photoId}")
             },
-        contentScale = ContentScale.FillWidth,
-    )
+        shape = RoundedCornerShape(12.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    ) {
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(uri)
+                .placeholder(R.drawable.plant_logo)
+                .build(),
+            contentDescription = "",
+            modifier = Modifier
+                .padding(2.dp)
+                .fillMaxSize(),
+            contentScale = ContentScale.Crop,
+        )
+    }
+
 }

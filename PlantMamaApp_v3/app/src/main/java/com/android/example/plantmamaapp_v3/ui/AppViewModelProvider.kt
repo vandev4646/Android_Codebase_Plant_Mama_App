@@ -51,6 +51,13 @@ object AppViewModelProvider {
         }
 
         initializer {
+            AllPhotosViewModel(
+                this.createSavedStateHandle(),
+                plantMamaApplication().container.photosRepository
+            )
+        }
+
+        initializer {
             InspectPhotoViewModel(
                 this.createSavedStateHandle(),
                 plantMamaApplication().container.photosRepository

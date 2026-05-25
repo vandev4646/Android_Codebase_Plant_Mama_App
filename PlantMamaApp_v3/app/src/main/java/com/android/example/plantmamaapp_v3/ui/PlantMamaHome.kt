@@ -40,6 +40,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.android.example.plantmamaapp_v3.R
@@ -57,84 +60,38 @@ fun PlantGridScreen(
     navController: NavController,
     viewModel: PlantMamaMainScreenViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
-    Box(modifier = Modifier.fillMaxSize()){
-        Image(
-            painter = painterResource(id = R.drawable.menu_screen),
-            contentDescription = null,
-            modifier.fillMaxSize(),
-            contentScale = ContentScale.Crop
-        )
-        var showAddPlantDialog by rememberSaveable { mutableStateOf(false) }
-        Scaffold(
-            containerColor = Color.Transparent,
-            topBar = {
-                PlantTopAppBar(
-                    canNavigateBack = navController.previousBackStackEntry != null,
-                    navigateUp = { navController.navigateUp() }
-                )
-            },
 
-            floatingActionButton = {
-                FloatingActionButton(onClick = {
 
-                    showAddPlantDialog = true
-                }) {
-                    Icon(Icons.Filled.Add, "Floating action button.")
-                }
-            },
-
-            content = { contentPadding ->
-
-                if(plants.isEmpty()){
-                    Spacer(modifier = Modifier.size(dimensionResource(R.dimen.padding_large)))
-                    Text(
-                        text = "Welcome! You currently do not have any plants listed. Click + to add one. Then click on the newly created plant to add reminders and photos",
-                        textAlign = TextAlign.Center,
-                        style = MaterialTheme.typography.titleLarge,
-                        modifier = Modifier.padding(contentPadding),
-                    )
-                }
-                else{
-                    LazyVerticalGrid(
-                        columns = GridCells.Adaptive(minSize = 150.dp, ),
-                        modifier = modifier.padding(horizontal = 4.dp),
-                        contentPadding = contentPadding,
-                    ) {
-                        items(items = plants) {
-                            plantItem(
-                                plant = it,
-                                navController = navController,
-                                viewModel = viewModel
+                        if(plants.isEmpty()){
+                            Spacer(modifier = Modifier.size(dimensionResource(R.dimen.padding_large)))
+                            Text(
+                                text = "Welcome! You currently do not have any plants listed. Click + to add one. Then click on the newly created plant to add reminders and photos",
+                                textAlign = TextAlign.Center,
+                                style = MaterialTheme.typography.titleLarge,
+                                modifier = Modifier.padding(16.dp),
                             )
                         }
-                    }
-
-                }
-
-                if (showAddPlantDialog) {
-                    viewModel.cameraForProfile = true
-                    AddPlant(
-                        onDismissRequest = { showAddPlantDialog = false },
-                        onConfirmation = { showAddPlantDialog = false },
-                        { navController.navigate(CameraStartDestination.route) },
-                        viewModel2 = viewModel
-                    )
-
-                }
-                if (!showAddPlantDialog) {
-                    viewModel.cameraForProfile = false
-                }
-
-            }
-        )
+                        else{
+                            LazyVerticalGrid(
+                                columns = GridCells.Adaptive(minSize = 150.dp, ),
+                                modifier = modifier.padding(horizontal = 4.dp).fillMaxSize(),
+                            ) {
+                                items(items = plants) {
+                                    PlantItem(
+                                        plant = it,
+                                        navController = navController,
+                                        viewModel = viewModel
+                                    )
+                                }
+                            }
+                        }
 
 
-    }
 }
 
 
 @Composable
-fun plantItem(
+fun PlantItem(
     plant: Plant,
     modifier: Modifier = Modifier,
     navController: NavController,
@@ -148,27 +105,24 @@ fun plantItem(
                 viewModel.currentPlant = plant
                 navController.navigate("${PlantProfileDestination.route}/${viewModel.currentPlant.id}")
             },
-        shape = RoundedCornerShape(12.dp), // Slightly rounder for modern look
+        shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
-            // 1. The Background Image
             AsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
                     .data(plant.profilePic.ifEmpty { R.drawable.plant_logo })
                     .build(),
                 contentDescription = null,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop // Fills the whole card
+                modifier = modifier,
+                contentScale = ContentScale.Crop
             )
 
-            // 2. The Gradient Overlay (Shadow at the bottom for readability)
             Box(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
-                    .padding(8.dp) // Space between the box and the card edge
+                    .padding(8.dp)
                     .background(
-                        // Semi-transparent background for the text box
                         color = Color.White.copy(alpha = 0.8f),
                         shape = RoundedCornerShape(8.dp)
                     )
@@ -178,7 +132,7 @@ fun plantItem(
                 Text(
                     text = plant.name,
                     modifier = Modifier
-                        .align(Alignment.BottomCenter) // Positions text at bottom left
+                        .align(Alignment.BottomCenter)
                         .padding(1.dp),
                     color = MaterialTheme.colorScheme.onBackground,
                     //style = MaterialTheme.typography.labelLarge,
