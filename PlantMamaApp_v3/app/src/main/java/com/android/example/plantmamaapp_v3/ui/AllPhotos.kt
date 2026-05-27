@@ -31,7 +31,7 @@ fun AllPhotos(modifier: Modifier = Modifier, navController: NavController){
     val allPhotosViewModel: AllPhotosViewModel = viewModel(factory = AppViewModelProvider.Factory)
     val allPhotosUiState by allPhotosViewModel.allPhotosUiState.collectAsState()
     val photoList = allPhotosUiState.photoList
-    val noPhotoMessage = "No Photos. To add a new photo, navigate to a plant profile. Then click the camera icon on the right sidebar to add reminders for that plant"
+    val noPhotoMessage = "No Photos. To add a new photo, navigate to a plant profile. Then click the camera icon on the right sidebar to add photos for that plant"
 
     PhotoDisplay(photoList, navController = navController, modifier = modifier.fillMaxSize(), noPlantMessage = noPhotoMessage)
 

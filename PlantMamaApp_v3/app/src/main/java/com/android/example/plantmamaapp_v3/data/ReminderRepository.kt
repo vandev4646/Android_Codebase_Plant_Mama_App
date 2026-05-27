@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.Flow
  * Repository that provides insert, update, delete, and retrieve of [Plant] from a given data source.
  */
 interface ReminderRepository {
+    fun getAllRemindersStream(): Flow<List<Reminder>>
     /**
      * Retrieve all the items from the the given data source.
      */

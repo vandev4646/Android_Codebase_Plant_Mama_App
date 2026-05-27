@@ -83,7 +83,7 @@ fun PlantBottomBar(
                     selected = currentRoute == item.route,
                     onClick = {
                         if (item.route == "add_plant") {
-                            onAddPlantClick() // Open dialog instead of navigating
+                            onAddPlantClick()
                         } else if (currentRoute != item.route) {
                             navController.navigate(item.route) {
                                 // Pop up to the start destination to avoid building up a massive stack

@@ -31,6 +31,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import com.android.example.plantmamaapp_v3.R
 
 /**
@@ -40,10 +42,23 @@ import com.android.example.plantmamaapp_v3.R
  */
 @Composable
 fun PlantTopAppBar(
+    navController: NavController,
     canNavigateBack: Boolean,
     navigateUp: () -> Unit,
+    onAddPlantClick: () -> Unit,
+    onInfoClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+
+    val items = listOf(
+        ToolbarItem("Home", Icons.Filled.Home, PlantMamaHomeDesintation.route),
+        ToolbarItem("All Reminders", Icons.Filled.Notifications, AllRemindersDesintation.route),
+        ToolbarItem("All Photos", Icons.Filled.PhotoLibrary, AllPhotosDesintation.route),
+        ToolbarItem("Add New Plant", Icons.Filled.Add, "add_plant"),
+                ToolbarItem("Info", Icons.Filled.Info, "info")
+    )
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
     var expanded by remember { mutableStateOf(false) }
     TopAppBar(
         title = {
@@ -66,31 +81,31 @@ fun PlantTopAppBar(
                 expanded = expanded,
                 onDismissRequest = { expanded = false }
             ) {
-                DropdownMenuItem(
-                    text = { Text("Home") },
-                    leadingIcon = { Icon(Icons.Filled.Home, contentDescription = "Home") },
-                    onClick = { }
-                )
-                DropdownMenuItem(
-                    text = { Text("All Reminders") },
-                    leadingIcon = { Icon(Icons.Filled.Notifications, contentDescription = "All Remidners") },
-                    onClick = {  }
-                )
-                DropdownMenuItem(
-                    text = { Text("All Photos") },
-                    leadingIcon = { Icon(Icons.Filled.PhotoLibrary, contentDescription = "All Photos") },
-                    onClick = {  }
-                )
-                DropdownMenuItem(
-                    text = { Text("Add New Plant") },
-                    leadingIcon = { Icon(Icons.Filled.Add, contentDescription = "Add Plant") },
-                    onClick = {  }
-                )
-                DropdownMenuItem(
-                    text = { Text("Info") },
-                    leadingIcon = { Icon(Icons.Filled.Info, contentDescription = "Info") },
-                    onClick = {  }
-                )
+                items.forEachIndexed { index, item ->
+                    DropdownMenuItem(
+                        text = { Text(item.title) },
+                        leadingIcon = { Icon(item.icon, contentDescription = item.title) },
+                        onClick = {
+                            if (item.route == "add_plant") {
+                                onAddPlantClick()
+                            } else if (item.route == "info"){
+                                onInfoClick()
+                            }
+                            else if (currentRoute != item.route) {
+                                navController.navigate(item.route) {
+                                    // Pop up to the start destination to avoid building up a massive stack
+                                    popUpTo(navController.graph.startDestinationId) {
+                                        saveState = true
+                                    }
+                                    // Avoid multiple copies of the same destination when reselecting
+                                    launchSingleTop = true
+                                    // Restore state when reselecting a previously selected item
+                                    restoreState = true
+                                }
+                            }
+                        }
+                    )
+                }
 
             }
         }

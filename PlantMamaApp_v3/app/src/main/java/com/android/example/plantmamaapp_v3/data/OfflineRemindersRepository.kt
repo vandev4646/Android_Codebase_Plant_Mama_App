@@ -3,6 +3,7 @@ package com.android.example.plantmamaapp_v3.data
 import kotlinx.coroutines.flow.Flow
 
 class OfflineRemindersRepository(private val reminderDao: ReminderDao) : ReminderRepository {
+    override fun getAllRemindersStream(): Flow<List<Reminder>> = reminderDao.getAllItems()
     override fun getAllRemindersStream(plantId: Int): Flow<List<Reminder>> =
         reminderDao.getAllItems(plantId)
 

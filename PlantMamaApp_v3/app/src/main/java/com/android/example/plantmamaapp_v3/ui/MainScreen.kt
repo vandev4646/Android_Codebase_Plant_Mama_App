@@ -3,8 +3,11 @@ package com.android.example.plantmamaapp_v3.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -51,14 +54,21 @@ fun PlantMamaApp(
             contentScale = ContentScale.Crop
         )
         var showAddPlantDialog by rememberSaveable { mutableStateOf(false) }
+        var showInfoDialog by rememberSaveable { mutableStateOf(false)}
         Scaffold(
             containerColor = Color.Transparent,
+            modifier = Modifier
+                .fillMaxSize()
+                .windowInsetsPadding(WindowInsets.safeDrawing),
             topBar = {
                 if(currentRoute == PlantMamaHomeDesintation.route){
                     PlantTopAppBar(
+                        navController = navController,
                         canNavigateBack = false,
                         //canNavigateBack = navController.previousBackStackEntry != null,
-                        navigateUp = { navController.navigateUp() }
+                        navigateUp = { navController.navigateUp() },
+                        onAddPlantClick = { showAddPlantDialog = true},
+                        onInfoClick = { showInfoDialog = false }
                     )
                 }
             },
@@ -163,7 +173,7 @@ fun PlantMamaApp(
 
                     }
                     composable(AllRemindersDesintation.route) {
-                        AllReminders()
+                        AllReminders(navController = navController)
                     }
 
                     composable(AllPhotosDesintation.route) {
@@ -184,6 +194,10 @@ fun PlantMamaApp(
         }
         if (!showAddPlantDialog) {
             viewModel.cameraForProfile = false
+        }
+
+        if(showInfoDialog){
+            InfoDialog({showInfoDialog = false})
         }
 }}
 

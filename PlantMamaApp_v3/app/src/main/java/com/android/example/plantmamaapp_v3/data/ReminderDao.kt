@@ -13,6 +13,8 @@ import kotlinx.coroutines.flow.Flow
  */
 @Dao
 interface ReminderDao {
+    @Query("SELECT * from reminders")
+    fun getAllItems(): Flow<List<Reminder>>
     @Query("SELECT * from reminders WHERE plantID = :plantId")
     fun getAllItems(plantId: Int): Flow<List<Reminder>>
 

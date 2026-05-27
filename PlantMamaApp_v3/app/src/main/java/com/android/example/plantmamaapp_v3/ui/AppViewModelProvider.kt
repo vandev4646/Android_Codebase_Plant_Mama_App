@@ -37,6 +37,13 @@ object AppViewModelProvider {
         }
 
         initializer {
+            AllReminderViewModel(
+                this.createSavedStateHandle(),
+                plantMamaApplication().container.reminderRepository
+            )
+        }
+
+        initializer {
             PhotoViewModel(
                 this.createSavedStateHandle(),
                 plantMamaApplication().container.photosRepository

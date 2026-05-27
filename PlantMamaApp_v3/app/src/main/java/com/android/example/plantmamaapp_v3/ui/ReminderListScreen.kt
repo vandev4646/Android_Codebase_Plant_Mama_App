@@ -70,7 +70,7 @@ fun ReminderListScreen(
 }
 
 @Composable
-private fun ReminderList(
+fun ReminderList(
     reminderList: List<Reminder>,
     modifier: Modifier = Modifier,
     deleteReminderViewModel: DeleteReminderViewModel = viewModel(factory = AppViewModelProvider.Factory),
