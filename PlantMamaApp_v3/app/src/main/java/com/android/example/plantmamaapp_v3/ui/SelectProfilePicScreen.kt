@@ -51,7 +51,7 @@ object SelectProfilePicDestination : NavigationDestination {
 
 @Composable
 fun SelectProfilePicScreen(
-    viewModelPlantMamaMainScreen: PlantMamaMainScreenViewModel,
+    viewModelPlantMamaMainScreen: MainScreenViewModel,
     navController: NavController,
 ) {
 
@@ -171,7 +171,7 @@ fun SelectProfilePicScreen(
 private fun takePhoto(
     controller: LifecycleCameraController,
     context: Context,
-    viewModelPlantMamaMainScreen: PlantMamaMainScreenViewModel,
+    viewModelPlantMamaMainScreen: MainScreenViewModel,
     navController: NavController,
 ) {
 

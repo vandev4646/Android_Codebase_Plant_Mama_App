@@ -35,6 +35,4 @@ fun AllPhotos(modifier: Modifier = Modifier, navController: NavController){
 
     PhotoDisplay(photoList, navController = navController, modifier = modifier.fillMaxSize(), noPlantMessage = noPhotoMessage)
 
-
-
 }

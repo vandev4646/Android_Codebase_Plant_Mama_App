@@ -2,7 +2,9 @@ package com.android.example.plantmamaapp_v3.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -44,18 +46,21 @@ fun PlantGridScreen(
     plants: List<Plant>,
     modifier: Modifier = Modifier,
     navController: NavController,
-    viewModel: PlantMamaMainScreenViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    viewModel: MainScreenViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
 
-
                         if(plants.isEmpty()){
-                            Spacer(modifier = Modifier.size(dimensionResource(R.dimen.padding_large)))
-                            Text(
-                                text = "Welcome! You currently do not have any plants listed. Click + to add one. Then click on the newly created plant to add reminders and photos",
-                                textAlign = TextAlign.Center,
-                                style = MaterialTheme.typography.titleLarge,
-                                modifier = Modifier.padding(16.dp),
-                            )
+                            Column(horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center, modifier = Modifier.fillMaxSize()) {
+                                Text(
+                                    text = "Welcome! You currently do not have any plants listed. Click + to add one. Then click on the newly created plant to add reminders and photos",
+                                    textAlign = TextAlign.Center,
+                                    style = MaterialTheme.typography.titleLarge,
+                                    modifier = Modifier.padding(16.dp),
+                                )
+                            }
+                            //Spacer(modifier = Modifier.size(dimensionResource(R.dimen.padding_large)))
+
                         }
                         else{
                             LazyVerticalGrid(
@@ -81,7 +86,7 @@ fun PlantItem(
     plant: Plant,
     modifier: Modifier = Modifier,
     navController: NavController,
-    viewModel: PlantMamaMainScreenViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    viewModel: MainScreenViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
     Card(
         modifier = modifier

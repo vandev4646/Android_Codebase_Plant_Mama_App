@@ -13,7 +13,7 @@ object AppViewModelProvider {
         initializer {
             val waterRepository =
                 (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as PlantMamaApplication).container.waterRepository
-            PlantMamaMainScreenViewModel(
+            MainScreenViewModel(
                 waterRepository = waterRepository,
                 plantsRepository = plantMamaApplication().container.plantsRepository
             )
@@ -68,6 +68,12 @@ object AppViewModelProvider {
             InspectPhotoViewModel(
                 this.createSavedStateHandle(),
                 plantMamaApplication().container.photosRepository
+            )
+        }
+        initializer {
+            PlantProfileViewModel(
+                plantMamaApplication().container.plantsRepository,
+                this.createSavedStateHandle()
             )
         }
 

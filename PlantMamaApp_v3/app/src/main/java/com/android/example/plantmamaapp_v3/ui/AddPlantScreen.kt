@@ -1,5 +1,6 @@
 package com.android.example.plantmamaapp_v3.ui
 
+import android.R.attr.contentDescription
 import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -52,7 +53,7 @@ fun AddPlant(
     onConfirmation: () -> Unit,
     onSelectProfilePic: () -> Unit,
     viewModel: PlantEntryViewModel = viewModel(factory = AppViewModelProvider.Factory),
-    viewModel2: PlantMamaMainScreenViewModel,
+    viewModel2: MainScreenViewModel,
     viewModel3: PhotoViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -80,14 +81,13 @@ fun AddPlant(
 
                 if (profileOrDefault.equals(Uri.EMPTY)) {
                     AddPlantProfile(
-                        painter = painterResource(R.drawable.plant_logo),
+                        uri = "",
                         icon = painterResource(R.drawable.baseline_upload_24),
-                        contentDescription = "Adding Plant Profile Pic",
                         onSelectProfilePic
                     )
                 }
                 if (!profileOrDefault.equals(Uri.EMPTY)) {
-                    AddPlantProfile2(
+                    AddPlantProfile(
                         uri = viewModel2.currentUri.toString(),
                         icon = painterResource(R.drawable.baseline_upload_24),
                         onSelectProfilePic
@@ -225,49 +225,9 @@ fun AddPlant(
 
 }
 
+
 @Composable
 fun AddPlantProfile(
-    painter: Painter,
-    icon: Painter,
-    contentDescription: String,
-    onSelectProfilePic: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Card(
-        modifier = modifier.width(70.dp),
-        shape = RoundedCornerShape(15.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 5.dp)
-    ) {
-        Box(
-            modifier = Modifier
-                .height(70.dp)
-                .width(70.dp), contentAlignment = Alignment.Center
-        ) {
-            Image(
-                painter = painter,
-                contentDescription = contentDescription,
-                contentScale = ContentScale.FillHeight,
-            )
-
-            Box(
-                modifier = Modifier
-                    .height(70.dp)
-                    .width(70.dp),
-                contentAlignment = Alignment.BottomCenter
-            ) {
-                IconButton(onClick = { onSelectProfilePic() }) {
-                    Icon(painter = icon, contentDescription = "Add Profile Pic")
-                }
-
-            }
-        }
-
-    }
-
-}
-
-@Composable
-fun AddPlantProfile2(
     uri: String,
     icon: Painter,
     onSelectProfilePic: () -> Unit,
@@ -283,18 +243,29 @@ fun AddPlantProfile2(
                 .height(70.dp)
                 .width(70.dp), contentAlignment = Alignment.Center
         ) {
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(uri)
-                    .placeholder(R.drawable.plant_logo)
-                    .build(),
-                contentDescription = "",
-                modifier = Modifier
-                    .padding(2.dp)
-                    .fillMaxSize(),
+            if(uri == ""){
+                Image(
+                    painter = painterResource(R.drawable.plant_logo),
+                    contentDescription = "Adding Plant Profile Pic",
+                    contentScale = ContentScale.FillHeight,
+                )
+            }
 
-                contentScale = ContentScale.FillWidth,
-            )
+            else{
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(uri)
+                        .placeholder(R.drawable.plant_logo)
+                        .build(),
+                    contentDescription = "Adding Plant Profile Pic",
+                    modifier = Modifier
+                        .padding(2.dp)
+                        .fillMaxSize(),
+
+                    contentScale = ContentScale.FillWidth,
+                )
+            }
+
 
             Box(
                 modifier = Modifier

@@ -1,26 +1,18 @@
 package com.android.example.plantmamaapp_v3.ui
 
 import android.net.Uri
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -36,27 +28,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
 import com.android.example.plantmamaapp_v3.R
 import com.android.example.plantmamaapp_v3.ui.navigation.NavigationDestination
 import kotlinx.coroutines.launch
-import java.util.Currency
-import java.util.Locale
 
 object PlantEditDestination : NavigationDestination {
     override val route = "item_edit"
@@ -75,7 +56,7 @@ fun PlantEditScreen(
     onProfilePicClick: () -> Unit,
     modifier: Modifier = Modifier,
     viewModel: PlantEditViewModel = viewModel(factory = AppViewModelProvider.Factory),
-    viewModel2: PlantMamaMainScreenViewModel,
+    viewModel2: MainScreenViewModel,
     viewModel3: PhotoViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ){
 
@@ -109,14 +90,13 @@ fun PlantEditScreen(
                 horizontalAlignment = Alignment.CenterHorizontally){
             if (profileOrDefault.equals(Uri.EMPTY)) {
                 AddPlantProfile(
-                    painter = painterResource(R.drawable.plant_logo),
+                    uri = "",
                     icon = painterResource(R.drawable.baseline_upload_24),
-                    contentDescription = "Adding Plant Profile Pic",
                     onProfilePicClick
                 )
             }
             if (!profileOrDefault.equals(Uri.EMPTY)) {
-                AddPlantProfile2(
+                AddPlantProfile(
                     uri = viewModel2.currentUri.toString(),
                     icon = painterResource(R.drawable.baseline_upload_24),
                     onProfilePicClick
@@ -166,7 +146,7 @@ fun PlantEntryBody(
     onDeleteClick: () -> Unit,
     onProfilePicClick: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: PlantMamaMainScreenViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    viewModel: MainScreenViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
 
 
@@ -311,38 +291,19 @@ fun profilePic(
     plantDetails: PlantDetails,
     onItemValueChange: (PlantDetails) -> Unit,
     onProfilePicClick: () -> Unit,
-    viewModel: PlantMamaMainScreenViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    viewModel: MainScreenViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ){
 
     val newUri by remember{ mutableStateOf(generateNewUri(viewModel.currentUri)) }
-
-    if (plantDetails.profilePic == "") {
         AddPlantProfile(
-            painter = painterResource(R.drawable.plant_logo),
-            icon = painterResource(R.drawable.baseline_upload_24),
-            contentDescription = "Adding Plant Profile Pic",
-            {
-                viewModel.cameraForProfile = true
-                onProfilePicClick()
-                onItemValueChange(plantDetails.copy(profilePic = newUri))
-
-            }
-        )
-    }
-    if (plantDetails.profilePic != "") {
-        AddPlantProfile2(
             uri = plantDetails.profilePic,
             icon = painterResource(R.drawable.baseline_upload_24),
             {
                 viewModel.cameraForProfile = true
                 onProfilePicClick()
                 onItemValueChange(plantDetails.copy(profilePic = newUri))
-
             }
-
         )
-    }
-
 }
 
 fun generateNewUri(uri: Uri): String {

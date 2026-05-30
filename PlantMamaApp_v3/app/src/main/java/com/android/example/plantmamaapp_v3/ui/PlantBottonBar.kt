@@ -101,7 +101,7 @@ fun PlantBottomBar(
                         Icon(
                             imageVector = item.icon,
                             contentDescription = item.title,
-                            modifier = Modifier.size(24.dp) // Enforces a cleaner, larger size
+                            modifier = Modifier.size(24.dp)
                         )
                     },
                     label = {

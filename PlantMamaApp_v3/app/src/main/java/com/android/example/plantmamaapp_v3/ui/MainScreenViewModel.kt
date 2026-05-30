@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
-class PlantMamaMainScreenViewModel(
+class MainScreenViewModel(
     private val waterRepository: WaterRepository,
     val plantsRepository: PlantsRepository
 ) : ViewModel() {

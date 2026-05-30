@@ -32,7 +32,7 @@ import com.android.example.plantmamaapp_v3.R
 
 @Composable
 fun PlantMamaApp(
-    viewModel: PlantMamaMainScreenViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    viewModel: MainScreenViewModel = viewModel(factory = AppViewModelProvider.Factory),
     navController: NavHostController = rememberNavController()
 ) {
 
@@ -45,6 +45,8 @@ fun PlantMamaApp(
         AllRemindersDesintation.route,
         AllPhotosDesintation.route
     )
+    var showAddPlantDialog by rememberSaveable { mutableStateOf(false) }
+    var showInfoDialog by rememberSaveable { mutableStateOf(false)}
 
     Box(modifier = Modifier.fillMaxSize()){
         Image(
@@ -53,8 +55,7 @@ fun PlantMamaApp(
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop
         )
-        var showAddPlantDialog by rememberSaveable { mutableStateOf(false) }
-        var showInfoDialog by rememberSaveable { mutableStateOf(false)}
+
         Scaffold(
             containerColor = Color.Transparent,
             modifier = Modifier
@@ -68,7 +69,7 @@ fun PlantMamaApp(
                         //canNavigateBack = navController.previousBackStackEntry != null,
                         navigateUp = { navController.navigateUp() },
                         onAddPlantClick = { showAddPlantDialog = true},
-                        onInfoClick = { showInfoDialog = false }
+                        onInfoClick = { showInfoDialog = true }
                     )
                 }
             },
@@ -108,10 +109,15 @@ fun PlantMamaApp(
                         )
                     }
 
-                    composable(route = CameraStartDestination.route) {
+                    composable(
+                        route = CameraStartDestination.routeWithArgs,
+                        arguments = listOf(navArgument(CameraStartDestination.isProfileArg) { type = NavType.BoolType })
+                    ) { backStackEntry ->
+                        val isProfileCamera = backStackEntry.arguments?.getBoolean(CameraStartDestination.isProfileArg) ?: false
                         StartMainCamera(
                             navController = navController,
-                            viewModelPlantMamaMainScreen = viewModel
+                            viewModelMainScreen = viewModel,
+                            cameraForProfile = isProfileCamera
                         )
                     }
 
@@ -166,7 +172,7 @@ fun PlantMamaApp(
                             onProfilePicClick = {
                                 viewModel.cameraForProfile = true
                                 viewModel.newProfilePicSelected = true
-                                navController.navigate(CameraStartDestination.route)
+                                navController.navigate("${CameraStartDestination.route}/true")
                             },
                             viewModel2 = viewModel
                         )

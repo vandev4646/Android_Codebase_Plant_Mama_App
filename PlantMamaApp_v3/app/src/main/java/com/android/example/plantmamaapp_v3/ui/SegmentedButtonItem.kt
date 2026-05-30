@@ -54,7 +54,7 @@ import com.android.example.plantmamaapp_v3.ui.SegmentedButtonsDefaults.outlineTh
 @Composable
 fun SegmentedButtons(
     modifier: Modifier = Modifier,
-    shape: Shape = RoundedCornerShape(percent = 50),
+    shape: Shape = RoundedCornerShape(percent = 35),
     colors: SegmentedButtonColors = SegmentedButtonsDefaults.colors(),
     outlineThickness: Dp = SegmentedButtonsDefaults.outlineThickness,
     border: BorderStroke = BorderStroke(outlineThickness, colors.outlineColor),
@@ -64,6 +64,8 @@ fun SegmentedButtons(
         shape = shape,
         border = border,
         modifier = modifier.defaultMinSize(minHeight = SegmentedButtonsDefaults.minimumHeight)
+            .padding(start = 8.dp, end = 8.dp),
+        color = Color.Transparent,
     ) {
         SubcomposeLayout(Modifier.fillMaxWidth()) { constraints ->
             val bottonRowWidth = constraints.maxWidth
@@ -168,9 +170,14 @@ fun SegmentedButtonItem(
             }
         }
 
-    val animationProgress: Float by animateFloatAsState(
-        targetValue = if (selected) colors.indicatorColor.alpha else 0f,
-        animationSpec = tween(ITEM_ANIMATION_MILLIS), label = "SegmentedButton"
+    val backgroundColor by animateColorAsState(
+        targetValue = if (selected) {
+            colors.indicatorColor
+        } else {
+            MaterialTheme.colorScheme.onSurface.copy(alpha = 0.15f)
+        },
+        animationSpec = tween(ITEM_ANIMATION_MILLIS),
+        label = "SegmentedButtonBackground"
     )
 
     Box(
@@ -182,7 +189,7 @@ fun SegmentedButtonItem(
                 role = Role.Tab,
             )
             .background(
-                color = colors.indicatorColor.copy(alpha = animationProgress),
+                color = backgroundColor,
             )
             .padding(12.dp),
         contentAlignment = Alignment.Center

@@ -33,7 +33,7 @@ object SelectedSinglePhotoScreenDestination : NavigationDestination {
 
 @Composable
 fun SelectedPhotoScreen(
-    viewModel: PlantMamaMainScreenViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    viewModel: MainScreenViewModel = viewModel(factory = AppViewModelProvider.Factory),
     photoViewModel: PhotoViewModel = viewModel(factory = AppViewModelProvider.Factory),
     onCancel: () -> Unit = {},
     plantId: Int,

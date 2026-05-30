@@ -1,19 +1,10 @@
 package com.android.example.plantmamaapp_v3.ui
 
-import android.Manifest
-import android.content.ContentValues
-import android.content.Context
 import android.net.Uri
-import android.os.Build
-import android.os.Environment
-import android.provider.MediaStore
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.CameraSelector
-import androidx.camera.core.ImageCapture
-import androidx.camera.core.ImageCaptureException
 import androidx.camera.view.CameraController
 import androidx.camera.view.LifecycleCameraController
 import androidx.compose.foundation.layout.Arrangement
@@ -31,9 +22,7 @@ import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,34 +31,24 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
-import com.android.example.plantmamaapp_v3.R
 import com.android.example.plantmamaapp_v3.ui.navigation.NavigationDestination
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.isGranted
-import com.google.accompanist.permissions.rememberPermissionState
-import com.google.accompanist.permissions.shouldShowRationale
-import java.io.File
-import java.io.FileOutputStream
-import java.io.InputStream
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 
 object CameraStartDestination : NavigationDestination {
     override val route = "camera_start"
+    const val isProfileArg = "isProfile"
+    val routeWithArgs = "$route/{$isProfileArg}"
 }
 
 @Composable
 fun StartMainCamera(
-    viewModelPlantMamaMainScreen: PlantMamaMainScreenViewModel,
+    viewModelMainScreen: MainScreenViewModel,
     navController: NavController,
+    cameraForProfile: Boolean
 ) {
 
-    val scaffoldState = rememberBottomSheetScaffoldState()
     val context = LocalContext.current
 
     var selectedImageUris by remember { mutableStateOf<List<Uri>>(emptyList()) }
@@ -93,7 +72,7 @@ fun StartMainCamera(
                 //selectedImageUris.plusElement(saveImageToNewFolder(context, uri))
             }
             selectedImageUris = mutableUris
-            viewModelPlantMamaMainScreen.selectedImagesUris = selectedImageUris
+            viewModelMainScreen.selectedImagesUris = selectedImageUris
             navController.navigate(SelectedPhotoScreenDestination.route)
 
         }
@@ -103,13 +82,13 @@ fun StartMainCamera(
         contract = ActivityResultContracts.PickVisualMedia(),
         onResult = { uri ->
             if (uri != null) {
-                viewModelPlantMamaMainScreen.currentUri = saveImageToNewFolder(context, uri)
+                viewModelMainScreen.currentUri = saveImageToNewFolder(context, uri)
             }
             navController.popBackStack()
         }
     )
 
-    var cameraForProfile = remember { viewModelPlantMamaMainScreen.cameraForProfile }
+    //var cameraForProfile = viewModelMainScreen.cameraForProfile
 
     CheckCameraPermission()
 
@@ -135,7 +114,7 @@ fun StartMainCamera(
                 ) {
                     Icon(
                         imageVector = Icons.Filled.ArrowBack,
-                        contentDescription = stringResource(R.string.nav_add_reminder)
+                        contentDescription = "Back"
                     )
                 }
             }
@@ -189,9 +168,8 @@ fun StartMainCamera(
                         if (!cameraForProfile) {
                             takePhoto(
                                 controller = controller,
-                                plantName = viewModelPlantMamaMainScreen.currentPlant.name,
                                 context = context,
-                                viewModelPlantMamaMainScreen = viewModelPlantMamaMainScreen,
+                                viewModelPlantMamaMainScreen = viewModelMainScreen,
                                 navigationAfter = {
                                     navController.navigate(
                                         SelectedSinglePhotoScreenDestination.route
@@ -203,10 +181,8 @@ fun StartMainCamera(
                         if (cameraForProfile) {
                             takePhoto(
                                 controller = controller,
-                                plantName = SimpleDateFormat("yyyy-MM-dd-HH-mm-ss-SSS", Locale.US)
-                                    .format(System.currentTimeMillis()),
                                 context = context,
-                                viewModelPlantMamaMainScreen = viewModelPlantMamaMainScreen,
+                                viewModelPlantMamaMainScreen = viewModelMainScreen,
                                 navigationAfter = { navController.popBackStack() }
                             )
                         }
@@ -223,99 +199,6 @@ fun StartMainCamera(
     }
 
 
-}
-
-
-private fun takePhoto(
-    controller: LifecycleCameraController,
-    plantName: String,
-    context: Context,
-    viewModelPlantMamaMainScreen: PlantMamaMainScreenViewModel,
-    navigationAfter: () -> Unit,
-) {
-
-    // Create time stamped name and MediaStore entry.
-    val TAG = "PlantMamaApp"
-    val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
-    val name = SimpleDateFormat(FILENAME_FORMAT, Locale.US)
-        .format(System.currentTimeMillis())
-    val contentValues = ContentValues().apply {
-        put(MediaStore.MediaColumns.DISPLAY_NAME, name)
-        put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
-            put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/PlantMama/${plantName}")
-        }
-    }
-
-    // Create output options object which contains file + metadata
-    val outputOptions = ImageCapture.OutputFileOptions
-        .Builder(
-            context.contentResolver,
-            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-            contentValues
-        )
-        .build()
-
-
-    controller.takePicture(
-        outputOptions,
-        ContextCompat.getMainExecutor(context),
-        object : ImageCapture.OnImageSavedCallback {
-            override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-                viewModelPlantMamaMainScreen.selectedImagesUris.plusElement(outputFileResults.savedUri)
-                viewModelPlantMamaMainScreen.currentUri = outputFileResults.savedUri!!
-                navigationAfter()
-            }
-
-            override fun onError(exception: ImageCaptureException) {
-                Log.e(TAG, "Photo capture failed: ${exception.message}", exception)
-            }
-
-        }
-
-    )
-}
-
-
-@OptIn(ExperimentalPermissionsApi::class)
-@Composable
-fun CheckCameraPermission() {
-    val cameraPermissionState = rememberPermissionState(Manifest.permission.CAMERA)
-    val requestLauncher =
-        rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
-            if (isGranted) {
-                // Permission granted
-            } else {
-                // Handle permission denial
-            }
-        }
-
-    LaunchedEffect(cameraPermissionState) {
-        if (cameraPermissionState.status.isGranted && cameraPermissionState.status.shouldShowRationale) {
-            // Show rationale if needed
-        } else {
-            requestLauncher.launch(Manifest.permission.CAMERA)
-        }
-    }
-}
-
-
-fun saveImageToNewFolder(context: Context, uri: Uri): Uri {
-    val inputStream: InputStream? = context.contentResolver.openInputStream(uri)
-    val newFile = File(context.getExternalFilesDir(Environment.DIRECTORY_PICTURES), "Plant_Mama")
-    if (!newFile.exists()) {
-        newFile.mkdirs()
-    }
-    val fileName = "${System.currentTimeMillis()}.jpg"
-    val outputFile = File(newFile, fileName)
-    val outputStream = FileOutputStream(outputFile)
-
-    inputStream?.use { input ->
-        outputStream.use { output ->
-            input.copyTo(output)
-        }
-    }
-    return Uri.fromFile(outputFile)
 }
 
 

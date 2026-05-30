@@ -74,7 +74,7 @@ private var totalDelay: Int = 0
 fun AddReminder(
     onDismissRequest: () -> Unit,
     onConfirmation: () -> Unit,
-    viewModel: PlantMamaMainScreenViewModel,
+    viewModel: MainScreenViewModel,
     reminderViewModel: ReminderEntryViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val coroutineScope = rememberCoroutineScope()
