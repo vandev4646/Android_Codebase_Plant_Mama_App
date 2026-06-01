@@ -26,6 +26,8 @@ import kotlinx.coroutines.withContext
 /**
  * ViewModel to retrieve and update an item from the [ItemsRepository]'s data source.
  */
+
+
 class PlantEditViewModel(
     savedStateHandle: SavedStateHandle,
     private val plantRepository: PlantsRepository,
@@ -42,6 +44,22 @@ class PlantEditViewModel(
         private set
 
     private val _profilePicChangeTrigger = mutableStateOf(false)
+
+    val plantFlow: StateFlow<ProfileUiState> = plantRepository.getPlantStream(plantId)
+        .map{
+            ProfileUiState(plant = it ?: Plant(
+                id = 0,
+                profilePic = "",
+                name = "Loading...",
+                age = 0,
+                type = "Loading...",
+                notes = "Loading..."
+            ))}
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = ProfileUiState()
+        )
 
     init {
         viewModelScope.launch {

@@ -11,10 +11,7 @@ import com.android.example.plantmamaapp_v3.PlantMamaApplication
 object AppViewModelProvider {
     val Factory: ViewModelProvider.Factory = viewModelFactory {
         initializer {
-            val waterRepository =
-                (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as PlantMamaApplication).container.waterRepository
             MainScreenViewModel(
-                waterRepository = waterRepository,
                 plantsRepository = plantMamaApplication().container.plantsRepository
             )
         }
@@ -26,7 +23,12 @@ object AppViewModelProvider {
 
         // Initializer for ReminderEntryViewModel
         initializer {
-            ReminderEntryViewModel(plantMamaApplication().container.reminderRepository)
+            val waterRepository =
+                (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as PlantMamaApplication).container.waterRepository
+            ReminderEntryViewModel(
+                plantMamaApplication().container.reminderRepository,
+                waterRepository = waterRepository,
+            )
         }
 
         initializer {

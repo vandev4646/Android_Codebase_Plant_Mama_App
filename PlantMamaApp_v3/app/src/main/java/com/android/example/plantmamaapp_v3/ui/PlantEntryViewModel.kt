@@ -62,6 +62,10 @@ class PlantEntryViewModel(private val plantsRepository: PlantsRepository) : View
             name.isNotBlank()
         }
     }
+
+    fun resetUiState(){
+        plantUiState = PlantUiState()
+    }
 }
 
 /**

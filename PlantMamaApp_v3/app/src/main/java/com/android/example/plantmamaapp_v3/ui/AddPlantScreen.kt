@@ -59,7 +59,11 @@ fun AddPlant(
     val coroutineScope = rememberCoroutineScope()
     val plantUiState = viewModel.plantUiState
     val profileOrDefault = remember { viewModel2.currentUri }
-    Dialog(onDismissRequest = { /*TODO*/ }) {
+    Dialog(onDismissRequest = {
+        viewModel.resetUiState()
+        viewModel2.resetTemparyImage()
+        onDismissRequest()
+    }) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -198,7 +202,11 @@ fun AddPlant(
                     horizontalArrangement = Arrangement.Center,
                 ) {
                     TextButton(
-                        onClick = { onDismissRequest() },
+                        onClick = {
+                            viewModel.resetUiState()
+                            viewModel2.resetTemparyImage()
+                            onDismissRequest()
+                                  },
                         modifier = Modifier.padding(8.dp),
                     ) {
                         Text("Cancel")
@@ -207,6 +215,8 @@ fun AddPlant(
                         onClick = {
                             coroutineScope.launch {
                                 viewModel.saveItem()
+                                viewModel.resetUiState()
+                                viewModel2.resetTemparyImage()
                                 onConfirmation()
                             }
                         },

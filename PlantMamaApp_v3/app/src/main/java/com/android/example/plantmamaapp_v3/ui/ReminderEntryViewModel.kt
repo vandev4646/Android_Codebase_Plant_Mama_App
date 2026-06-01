@@ -28,11 +28,16 @@ import androidx.lifecycle.ViewModel
 import com.android.example.plantmamaapp_v3.data.Plant
 import com.android.example.plantmamaapp_v3.data.Reminder
 import com.android.example.plantmamaapp_v3.data.ReminderRepository
+import com.android.example.plantmamaapp_v3.data.ReminderWM
+import com.android.example.plantmamaapp_v3.data.WaterRepository
 
 /**
  * ViewModel to validate and insert items in the Room database.
  */
-class ReminderEntryViewModel(private val reminderRepository: ReminderRepository) : ViewModel() {
+class ReminderEntryViewModel(
+    private val reminderRepository: ReminderRepository,
+    private val waterRepository: WaterRepository,
+) : ViewModel() {
 
     /**
      * Holds current plant ui state
@@ -67,6 +72,17 @@ class ReminderEntryViewModel(private val reminderRepository: ReminderRepository)
             date.isNotBlank()
             time.isNotBlank()
         }
+    }
+
+    fun scheduleReminder(reminderWM: ReminderWM) {
+        waterRepository.scheduleReminder(
+            reminderWM.duration,
+            reminderWM.unit,
+            reminderWM.plantName,
+            reminderWM.reminderTitle,
+            reminderWM.reminderIdentifier,
+            reminderWM.recurrence
+        )
     }
 }
 

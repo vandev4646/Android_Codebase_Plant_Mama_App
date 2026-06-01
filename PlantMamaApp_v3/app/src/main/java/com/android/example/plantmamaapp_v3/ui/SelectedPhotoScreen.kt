@@ -135,7 +135,7 @@ fun SelectedSinglePhotoScreen(
 fun ImageDisplay(uri: Uri) {
     Image1(
         painter = rememberAsyncImagePainter(
-            model = Uri.parse(uri.toString())  // or ht
+            model = Uri.parse(uri.toString())
         ),
         contentDescription = "123",
         modifier = Modifier.fillMaxSize(),

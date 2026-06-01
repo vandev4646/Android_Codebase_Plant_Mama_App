@@ -55,6 +55,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.android.example.plantmamaapp_v3.R
+import com.android.example.plantmamaapp_v3.data.Plant
 import com.android.example.plantmamaapp_v3.data.Recurrence
 import com.android.example.plantmamaapp_v3.data.ReminderWM
 import kotlinx.coroutines.launch
@@ -74,7 +75,7 @@ private var totalDelay: Int = 0
 fun AddReminder(
     onDismissRequest: () -> Unit,
     onConfirmation: () -> Unit,
-    viewModel: MainScreenViewModel,
+    currentPlant: Plant,
     reminderViewModel: ReminderEntryViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val coroutineScope = rememberCoroutineScope()
@@ -85,7 +86,7 @@ fun AddReminder(
     val recurrenceOptions = Recurrence.values().toList()
 
     CheckReminderPermission()
-    reminderViewModel.updateUiState(reminderUiState.reminderDetails.copy(plantID = viewModel.currentPlant.id.toString()))
+    reminderViewModel.updateUiState(reminderUiState.reminderDetails.copy(plantID = currentPlant.id.toString()))
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -187,25 +188,25 @@ fun AddReminder(
                 TextButton(
                     onClick = {
                         val reminderIdentifier =
-                            viewModel.currentPlant.name + currentTimeMillis().toString()
+                            currentPlant.name + currentTimeMillis().toString()
                         var reminderWM = ReminderWM(
                             duration = totalDelay.toLong(),
                             unit = TimeUnit.MINUTES,
-                            plantName = viewModel.currentPlant.name,
+                            plantName = currentPlant.name,
                             reminderTitle = reminderUiState.reminderDetails.title,
                             reminderIdentifier = reminderIdentifier,
                             recurrence = selectedRecurrence
                         )
 
                         reminderWM.reminderIdentifier = reminderIdentifier
-                        reminderViewModel.updateUiState(reminderUiState.reminderDetails.copy(plantID = viewModel.currentPlant.id.toString()))
+                        reminderViewModel.updateUiState(reminderUiState.reminderDetails.copy(plantID =currentPlant.id.toString()))
                         reminderViewModel.updateUiState(
                             reminderUiState.reminderDetails.copy(
                                 wmIdentifier = reminderIdentifier
                             )
                         )
 
-                        viewModel.scheduleReminder(reminderWM)
+                        reminderViewModel.scheduleReminder(reminderWM)
                         coroutineScope.launch {
                             reminderViewModel.saveItem()
                         }

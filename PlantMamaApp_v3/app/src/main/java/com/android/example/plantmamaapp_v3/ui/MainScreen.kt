@@ -47,6 +47,7 @@ fun PlantMamaApp(
     )
     var showAddPlantDialog by rememberSaveable { mutableStateOf(false) }
     var showInfoDialog by rememberSaveable { mutableStateOf(false)}
+    val isCameraActive = currentRoute?.startsWith(CameraStartDestination.route) == true
 
     Box(modifier = Modifier.fillMaxSize()){
         Image(
@@ -104,9 +105,32 @@ fun PlantMamaApp(
                         })
                     ) {
                         PlantProfleMain(
-                            viewModel = viewModel,
                             navController = navController
                         )
+                    }
+
+                    composable(
+                        route = PlantEditDestination.routeWithArgs,
+                        arguments = listOf(navArgument(PlantEditDestination.itemIdArg) {
+                            type = NavType.IntType
+                        })
+                    ) {
+                        PlantEditScreen(
+                            navigateBack = { navController.popBackStack() },
+                            onNavigateUp = { navController.navigateUp() },
+                            navigateHome = {
+                                navController.popBackStack()
+                                navController.popBackStack()
+                                navController.navigate(PlantMamaHomeDesintation.route)
+                            },
+                            onProfilePicClick = {
+                                //viewModel.cameraForProfile = true
+                                viewModel.newProfilePicSelected = true
+                                navController.navigate("${CameraStartDestination.route}/true")
+                            },
+                            viewModel2 = viewModel
+                        )
+
                     }
 
                     composable(
@@ -155,29 +179,6 @@ fun PlantMamaApp(
                         InspectPhotoScreen(viewModel = viewModel, navController = navController)
                     }
 
-                    composable(
-                        route = PlantEditDestination.routeWithArgs,
-                        arguments = listOf(navArgument(PlantEditDestination.itemIdArg) {
-                            type = NavType.IntType
-                        })
-                    ) {
-                        PlantEditScreen(
-                            navigateBack = { navController.popBackStack() },
-                            onNavigateUp = { navController.navigateUp() },
-                            navigateHome = {
-                                navController.popBackStack()
-                                navController.popBackStack()
-                                navController.navigate(PlantMamaHomeDesintation.route)
-                            },
-                            onProfilePicClick = {
-                                viewModel.cameraForProfile = true
-                                viewModel.newProfilePicSelected = true
-                                navController.navigate("${CameraStartDestination.route}/true")
-                            },
-                            viewModel2 = viewModel
-                        )
-
-                    }
                     composable(AllRemindersDesintation.route) {
                         AllReminders(navController = navController)
                     }
@@ -188,19 +189,18 @@ fun PlantMamaApp(
                 }
             }
 
-        if (showAddPlantDialog) {
-            viewModel.cameraForProfile = true
+        if (showAddPlantDialog && !isCameraActive) {
             AddPlant(
                 onDismissRequest = { showAddPlantDialog = false },
                 onConfirmation = { showAddPlantDialog = false },
-                { navController.navigate(CameraStartDestination.route) },
+                {
+                    navController.navigate(("${CameraStartDestination.route}/true"))
+                },
                 viewModel2 = viewModel
             )
 
         }
-        if (!showAddPlantDialog) {
-            viewModel.cameraForProfile = false
-        }
+
 
         if(showInfoDialog){
             InfoDialog({showInfoDialog = false})

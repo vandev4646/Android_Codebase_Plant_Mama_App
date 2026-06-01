@@ -217,7 +217,7 @@ fun PlantProfleMain(
                     AddReminder(
                         onDismissRequest = { showAddReminderDialog = false },
                         onConfirmation = { showAddReminderDialog = false },
-                        viewModel = viewModel
+                        currentPlant = currentPlant
                     )
                 }
 

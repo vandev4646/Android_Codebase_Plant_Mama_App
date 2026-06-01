@@ -34,6 +34,7 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.android.example.plantmamaapp_v3.R
 import com.android.example.plantmamaapp_v3.ui.navigation.NavigationDestination
@@ -63,6 +64,8 @@ fun PlantEditScreen(
 
     val coroutineScope = rememberCoroutineScope()
     val plantUiState = viewModel.plantUiState
+    //val profileUiState by viewModel.plantFlow.collectAsStateWithLifecycle()
+    //val currentUri = Uri.parse(profileUiState.plant.profilePic)
     if(!viewModel2.newProfilePicSelected){
         viewModel2.currentUri = Uri.parse(viewModel2.currentPlant.profilePic)
     }
@@ -125,13 +128,9 @@ fun PlantEditScreen(
                     }
 
                 },
-                onProfilePicClick =
-                {
-                    onProfilePicClick()
-                },
+
                 modifier = Modifier
-                    .padding(),
-                viewModel2
+                    .padding()
             )
         }
 
@@ -144,9 +143,7 @@ fun PlantEntryBody(
     onItemValueChange: (PlantDetails) -> Unit,
     onSaveClick: () -> Unit,
     onDeleteClick: () -> Unit,
-    onProfilePicClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    viewModel: MainScreenViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    modifier: Modifier = Modifier
 ) {
 
 
@@ -299,7 +296,7 @@ fun profilePic(
             uri = plantDetails.profilePic,
             icon = painterResource(R.drawable.baseline_upload_24),
             {
-                viewModel.cameraForProfile = true
+                //viewModel.cameraForProfile = true
                 onProfilePicClick()
                 onItemValueChange(plantDetails.copy(profilePic = newUri))
             }

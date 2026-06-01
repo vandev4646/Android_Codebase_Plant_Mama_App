@@ -149,7 +149,7 @@ fun SelectProfilePicScreen(
                             controller = controller,
                             context = context,
                             viewModelPlantMamaMainScreen = viewModelPlantMamaMainScreen,
-                            navController = navController,
+                            navigationAfter = {navController.popBackStack()}
                         )
                         navController.popBackStack()
 
@@ -168,57 +168,6 @@ fun SelectProfilePicScreen(
 }
 
 
-private fun takePhoto(
-    controller: LifecycleCameraController,
-    context: Context,
-    viewModelPlantMamaMainScreen: MainScreenViewModel,
-    navController: NavController,
-) {
-
-    // Create time stamped name and MediaStore entry.
-    val TAG = "PlantMamaApp"
-    val FILENAME_FORMAT = "yyyy-MM-dd-HH-mm-ss-SSS"
-    val name = SimpleDateFormat(FILENAME_FORMAT, Locale.US)
-        .format(System.currentTimeMillis())
-    val contentValues = ContentValues().apply {
-        put(MediaStore.MediaColumns.DISPLAY_NAME, name)
-        put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.P) {
-            put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/PlantMama/profilePic/${name}")
-        }
-    }
-
-    // Create output options object which contains file + metadata
-    val outputOptions = ImageCapture.OutputFileOptions
-        .Builder(
-            context.contentResolver,
-            MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-            contentValues
-        )
-        .build()
-
-    controller.takePicture(
-        outputOptions,
-        ContextCompat.getMainExecutor(context),
-        object : ImageCapture.OnImageSavedCallback {
-            override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-                val msg = "Photo capture succeded: ${outputFileResults.savedUri}"
-                Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
-                Log.d(TAG, msg)
-                viewModelPlantMamaMainScreen.selectedImagesUris.plusElement(outputFileResults.savedUri)
-                viewModelPlantMamaMainScreen.currentUri = outputFileResults.savedUri!!
-                navController.popBackStack()
-
-            }
-
-            override fun onError(exception: ImageCaptureException) {
-                Log.e(TAG, "Photo capture failed: ${exception.message}", exception)
-            }
-
-        }
-
-    )
-}
 
 
 

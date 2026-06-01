@@ -13,7 +13,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
 class MainScreenViewModel(
-    private val waterRepository: WaterRepository,
     val plantsRepository: PlantsRepository
 ) : ViewModel() {
 
@@ -21,30 +20,22 @@ class MainScreenViewModel(
     var currentUri: Uri = Uri.EMPTY
 
     var deletePhotoPath = ""
-    var deletePhotoId = 0
 
     //for selected images
     var selectedImagesUris: List<Uri> = mutableListOf()
 
-    var cameraForProfile = false
-
     var newProfilePicSelected = false
+
+    fun resetTemparyImage(){
+        currentUri = Uri.EMPTY
+    }
 
 
     //Information from the Water Me app for the reminder schedule
     //WAS CAUSING CRASHES SO I COMMEMENTED IT OUT. WILL NEED TO MAKE SURE THIS ISN'T NEEDED IN THE FUTURE
     //internal val waterPlants = waterRepository.plants
 
-    fun scheduleReminder(reminderWM: ReminderWM) {
-        waterRepository.scheduleReminder(
-            reminderWM.duration,
-            reminderWM.unit,
-            reminderWM.plantName,
-            reminderWM.reminderTitle,
-            reminderWM.reminderIdentifier,
-            reminderWM.recurrence
-        )
-    }
+
 
 
     val homeUiState: StateFlow<HomeUiState> =
