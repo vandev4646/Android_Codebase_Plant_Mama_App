@@ -27,6 +27,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.android.example.plantmamaapp_v3.data.Plant
 import com.android.example.plantmamaapp_v3.data.PlantsRepository
+import java.util.Date
 
 /**
  * ViewModel to validate and insert items in the Room database.
@@ -80,7 +81,7 @@ data class PlantDetails(
     val id: Int = 0,
     val profilePic: String = "",
     val name: String = "",
-    val age: String = "",
+    val datePurchased: Long = System.currentTimeMillis(),
     val type: String = "",
     val description: String = "",
 )
@@ -94,9 +95,9 @@ fun PlantDetails.toItem(): Plant = Plant(
     id = id,
     profilePic = profilePic,
     name = name,
-    age = age.toIntOrNull() ?: 0,
+    datePurchased = Date(datePurchased),
     type = type,
-    notes = description
+    description = description
 )
 
 
@@ -115,7 +116,7 @@ fun Plant.toPlantDetails(): PlantDetails = PlantDetails(
     id = id,
     profilePic = profilePic,
     name = name,
-    age = age.toString(),
+    datePurchased = datePurchased.time,
     type = type,
-    description = notes
+    description = description
 )

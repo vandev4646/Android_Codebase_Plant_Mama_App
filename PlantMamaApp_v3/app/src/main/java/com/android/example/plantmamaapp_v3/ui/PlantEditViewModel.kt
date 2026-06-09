@@ -10,17 +10,16 @@ import com.android.example.plantmamaapp_v3.data.PhotosRepository
 import com.android.example.plantmamaapp_v3.data.Plant
 import com.android.example.plantmamaapp_v3.data.PlantsRepository
 import com.android.example.plantmamaapp_v3.data.ReminderRepository
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import java.lang.System
+import java.util.Date
+import kotlin.Long
 
 
 /**
@@ -51,9 +50,9 @@ class PlantEditViewModel(
                 id = 0,
                 profilePic = "",
                 name = "Loading...",
-                age = 0,
+                datePurchased = Date(System.currentTimeMillis()),
                 type = "Loading...",
-                notes = "Loading..."
+                description = "Loading..."
             ))}
         .stateIn(
             scope = viewModelScope,

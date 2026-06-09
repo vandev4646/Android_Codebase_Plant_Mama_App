@@ -2,6 +2,7 @@ package com.android.example.plantmamaapp_v3.data
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.util.Date
 
 @Entity(tableName = "plants")
 data class Plant(
@@ -9,7 +10,7 @@ data class Plant(
     val id: Int = 0,
     val profilePic: String,
     val name: String,
-    val age: Int,
+    val datePurchased: Date,
     val type: String,
-    val notes: String,
+    val description: String,
 )

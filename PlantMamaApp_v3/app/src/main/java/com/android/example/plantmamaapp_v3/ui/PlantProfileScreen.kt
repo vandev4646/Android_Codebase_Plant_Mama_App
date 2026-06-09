@@ -46,6 +46,10 @@ import com.android.example.plantmamaapp_v3.data.Plant
 import com.android.example.plantmamaapp_v3.ui.navigation.NavigationDestination
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import java.time.LocalDate
+import java.time.Period
+import java.time.ZoneId
+import java.util.Date
 
 object PlantProfileDestination : NavigationDestination {
     override val route = "plant_profile"
@@ -251,6 +255,10 @@ fun PlantDetailsDisplay(plant: Plant) {
             style = TextStyle(),
         ).size.height.toDp()}
 
+    val formattedAge = remember(plant.datePurchased){
+        calculatePlantAgeText(plant.datePurchased)
+    }
+
     Column(modifier = Modifier.padding(6.dp)) {
 
         Row(modifier = Modifier) {
@@ -260,7 +268,7 @@ fun PlantDetailsDisplay(plant: Plant) {
         }
         Row(modifier = Modifier) {
             Text(text = "Age", modifier = Modifier.size(96.dp, 32.dp))
-            Text(text = plant.age.toString(), fontWeight = FontWeight.Bold, maxLines = 1, softWrap = true)
+            Text(text = formattedAge, fontWeight = FontWeight.Bold, maxLines = 1, softWrap = true)
 
         }
         Row(modifier = Modifier) {
@@ -272,12 +280,39 @@ fun PlantDetailsDisplay(plant: Plant) {
         }
         Row(modifier = Modifier) {
             Text(text = "Notes", modifier = Modifier.size(96.dp, 32.dp))
-            Text(text = plant.notes, fontWeight = FontWeight.Bold, softWrap = true, modifier = Modifier
+            Text(text = plant.description, fontWeight = FontWeight.Bold, softWrap = true, modifier = Modifier
                 .verticalScroll(rememberScrollState())
             )
 
         }
 
+    }
+}
+
+fun calculatePlantAgeText(purchasedDate: Date): String{
+    //get the local data from the purchase date
+    val purchasedLocalDate = purchasedDate.toInstant()
+        .atZone(ZoneId.systemDefault())
+        .toLocalDate()
+    val today = LocalDate.now()
+
+    //time between date calcuation
+    val period = Period.between(purchasedLocalDate, today)
+    val totalMonths = (period.years * 12) + period.months
+
+    return when{
+        totalMonths <= 0 -> "Less than a month"
+        totalMonths <= 12 -> "$totalMonths months"
+        else -> {
+            val years = period.years
+            val remainingMonths = period.months
+
+            if(remainingMonths > 0) {
+                "$years years and $remainingMonths months"
+            } else {
+                "$years years"
+            }
+        }
     }
 }
 
@@ -290,8 +325,8 @@ fun PlantProfilePreview() {
         id = 1,
         name = "Ferny",
         type = "Boston Fern",
-        age = 2,
-        notes = "Needs high humidity and indirect light.",
+        datePurchased = Date(System.currentTimeMillis()),
+        description = "Needs high humidity and indirect light.",
         profilePic = "" // Empty to trigger the local painterResource
     )
 

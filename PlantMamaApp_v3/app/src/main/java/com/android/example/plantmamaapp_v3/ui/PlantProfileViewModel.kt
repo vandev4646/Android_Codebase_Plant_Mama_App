@@ -9,14 +9,15 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import java.util.Date
 
 data class ProfileUiState(val plant: Plant = Plant(
     id = 0,
     profilePic = "",
     name = "Loading...",
-    age = 0,
+    datePurchased = Date(System.currentTimeMillis()),
     type = "Loading...",
-    notes = "Loading..."
+    description = "Loading..."
 ))
 
 class PlantProfileViewModel (
@@ -31,9 +32,9 @@ class PlantProfileViewModel (
                 id = 0,
                 profilePic = "",
                 name = "Loading...",
-                age = 0,
+                datePurchased = Date(System.currentTimeMillis()),
                 type = "Loading...",
-                notes = "Loading..."
+                description = "Loading..."
             ))}
         .stateIn(
             scope = viewModelScope,

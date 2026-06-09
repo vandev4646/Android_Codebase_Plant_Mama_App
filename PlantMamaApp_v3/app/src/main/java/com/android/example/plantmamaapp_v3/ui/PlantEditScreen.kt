@@ -1,7 +1,9 @@
 package com.android.example.plantmamaapp_v3.ui
 
 import android.net.Uri
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
@@ -14,6 +16,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -22,12 +26,15 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarScrollBehavior
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -70,8 +77,36 @@ fun PlantEditScreen(
         viewModel2.currentUri = Uri.parse(viewModel2.currentPlant.profilePic)
     }
     val profileOrDefault = remember { viewModel2.currentUri }
+    var showDatePicker by remember { mutableStateOf(false) }
+    val datePickerState = rememberDatePickerState(
+        initialSelectedDateMillis = plantUiState.plantDetails.datePurchased
+    )
 
+    if (showDatePicker){
+        DatePickerDialog(
+            onDismissRequest = { showDatePicker = false},
+            confirmButton = {
+                TextButton(onClick = {
+                    datePickerState.selectedDateMillis?.let { selectedTime ->
+                        viewModel.updateUiState(
+                            plantUiState.plantDetails.copy(datePurchased = selectedTime)
+                        )
+                    }
+                    showDatePicker = false
+                }) {
+                    Text("Ok")
+                }
 
+            },
+            dismissButton = {
+                TextButton(onClick = {showDatePicker = false}) {
+                    Text("Cancel")
+                }
+            }
+        ){
+            DatePicker(state = datePickerState)
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -112,10 +147,6 @@ fun PlantEditScreen(
                 plantUiState = viewModel.plantUiState,
                 onItemValueChange = viewModel::updateUiState,
                 onSaveClick = {
-                    // Note: If the user rotates the screen very fast, the operation may get cancelled
-                    // and the item may not be saved in the Database. This is because when config
-                    // change occurs, the Activity will be recreated and the rememberCoroutineScope will
-                    // be cancelled - since the scope is bound to composition.
                     coroutineScope.launch {
                         viewModel.updatePlant()
                         navigateBack()
@@ -130,7 +161,8 @@ fun PlantEditScreen(
                 },
 
                 modifier = Modifier
-                    .padding()
+                    .padding(),
+                onClickDate = {showDatePicker = true}
             )
         }
 
@@ -143,7 +175,8 @@ fun PlantEntryBody(
     onItemValueChange: (PlantDetails) -> Unit,
     onSaveClick: () -> Unit,
     onDeleteClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onClickDate: () -> Unit
 ) {
 
 
@@ -158,7 +191,8 @@ fun PlantEntryBody(
         PlantInputForm(
             itemDetails = plantUiState.plantDetails,
             onValueChange = onItemValueChange,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            onClickDate = onClickDate
         )
         Button(
             onClick = onSaveClick,
@@ -185,6 +219,7 @@ fun PlantInputForm(
     itemDetails: PlantDetails,
     modifier: Modifier = Modifier,
     onValueChange: (PlantDetails) -> Unit = {},
+    onClickDate: () -> Unit,
     enabled: Boolean = true
 ) {
     Column(
@@ -206,20 +241,30 @@ fun PlantInputForm(
             enabled = enabled,
             singleLine = true
         )
-        OutlinedTextField(
-            value = itemDetails.age,
-            onValueChange = { onValueChange(itemDetails.copy(age = it)) },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            label = {Text("Age") },
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-                unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-                disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-            ),
-            modifier = Modifier.fillMaxWidth(),
-            enabled = enabled,
-            singleLine = true
-        )
+        Box(
+            modifier = Modifier.fillMaxWidth().clickable(onClick = onClickDate),
+        ){
+            OutlinedTextField(
+                value = formatLongToDateString(itemDetails.datePurchased),
+                onValueChange = {  },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                label = {Text("Date Purchased") },
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+                ),
+                modifier = Modifier.fillMaxWidth(),
+                enabled = true,
+                singleLine = true,
+                readOnly = true
+            )
+            //this is needed to make the text field uneditable
+            Box(
+                modifier = Modifier.matchParentSize().clickable(onClick = onClickDate)
+            )
+        }
+
         OutlinedTextField(
             value = itemDetails.type,
             onValueChange = { onValueChange(itemDetails.copy(type = it)) },

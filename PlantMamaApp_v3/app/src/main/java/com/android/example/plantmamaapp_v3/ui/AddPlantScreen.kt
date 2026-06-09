@@ -1,8 +1,10 @@
 package com.android.example.plantmamaapp_v3.ui
 
 import android.R.attr.contentDescription
+import java.util.TimeZone
 import android.net.Uri
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,6 +21,8 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -26,9 +30,13 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
@@ -45,6 +53,9 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.android.example.plantmamaapp_v3.R
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 
 @Composable
@@ -59,6 +70,38 @@ fun AddPlant(
     val coroutineScope = rememberCoroutineScope()
     val plantUiState = viewModel.plantUiState
     val profileOrDefault = remember { viewModel2.currentUri }
+    var showDatePicker by remember { mutableStateOf(false) }
+    val datePickerState = rememberDatePickerState(
+        initialSelectedDateMillis = plantUiState.plantDetails.datePurchased
+    )
+
+    if (showDatePicker){
+        DatePickerDialog(
+            onDismissRequest = { showDatePicker = false},
+            confirmButton = {
+                TextButton(onClick = {
+                    datePickerState.selectedDateMillis?.let { selectedTime ->
+                        viewModel.updateUiState(
+                            plantUiState.plantDetails.copy(datePurchased = selectedTime)
+                        )
+                    }
+                    showDatePicker = false
+                }) {
+                    Text("Ok")
+                }
+
+            },
+            dismissButton = {
+                TextButton(onClick = {showDatePicker = false}) {
+                    Text("Cancel")
+                }
+            }
+        ){
+            DatePicker(state = datePickerState)
+        }
+    }
+
+
     Dialog(onDismissRequest = {
         viewModel.resetUiState()
         viewModel2.resetTemparyImage()
@@ -121,27 +164,34 @@ fun AddPlant(
                     )
                 )
 
-                //Age enter value
-                OutlinedTextField(
-                    value = plantUiState.plantDetails.age.toString(),
-                    singleLine = true,
-                    shape = MaterialTheme.shapes.small,
-                    modifier = Modifier.fillMaxWidth(0.9f),
-                    colors = TextFieldDefaults.colors(
-                        focusedContainerColor = MaterialTheme.colorScheme.surface,
-                        unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-                        disabledContainerColor = MaterialTheme.colorScheme.surface,
-                    ),
-                    onValueChange = { viewModel.updateUiState(plantUiState.plantDetails.copy(age = it)) },
-                    label = { Text("Age") },
-                    isError = false,
-                    keyboardOptions = KeyboardOptions.Default.copy(
-                        imeAction = ImeAction.Done
-                    ),
-                    keyboardActions = KeyboardActions(
-                        onDone = { }
+                //Date purchased enter value
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(0.9f)
+                        .clickable { showDatePicker = true }
+                ){
+                    OutlinedTextField(
+                        value = formatLongToDateString(plantUiState.plantDetails.datePurchased),
+                        singleLine = true,
+                        shape = MaterialTheme.shapes.small,
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = TextFieldDefaults.colors(
+                            focusedContainerColor = MaterialTheme.colorScheme.surface,
+                            unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                            disabledContainerColor = MaterialTheme.colorScheme.surface,
+                        ),
+                        onValueChange = { },
+                        label = { Text("Date Purchased") },
+                        readOnly = true,
+                        enabled = true
                     )
-                )
+                    //this is needed to make the text field uneditable
+                    Box(
+                        modifier = Modifier
+                            .matchParentSize()
+                            .clickable { showDatePicker = true }
+                    )
+                }
 
                 //Type enter value
                 OutlinedTextField(
@@ -292,4 +342,11 @@ fun AddPlantProfile(
 
     }
 
+}
+
+fun formatLongToDateString(timeInMillis: Long): String{
+    val formatter = SimpleDateFormat("MMM dd yyyy", Locale.getDefault()).apply {
+        timeZone = TimeZone.getTimeZone("UTC")
+    }
+    return formatter.format(Date(timeInMillis))
 }
