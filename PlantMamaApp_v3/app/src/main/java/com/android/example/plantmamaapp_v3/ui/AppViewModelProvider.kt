@@ -75,7 +75,8 @@ object AppViewModelProvider {
         initializer {
             PlantProfileViewModel(
                 plantMamaApplication().container.plantsRepository,
-                this.createSavedStateHandle()
+                this.createSavedStateHandle(),
+                noteRepository = plantMamaApplication().container.notesRepository,
             )
         }
 
@@ -93,6 +94,12 @@ object AppViewModelProvider {
                 this.createSavedStateHandle(),
                 plantMamaApplication().container.reminderRepository,
                 plantMamaApplication().container.waterRepository
+            )
+        }
+
+        initializer {
+            NoteViewModel(
+                plantMamaApplication().container.notesRepository
             )
         }
     }

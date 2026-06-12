@@ -14,7 +14,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.List
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -67,6 +70,7 @@ fun PlantProfleMain(
 ) {
     var showAddReminderDialog by rememberSaveable { mutableStateOf(false) }
     var showEditPlantDialog by rememberSaveable { mutableStateOf(false) }
+    var showAddNoteDialog by rememberSaveable { mutableStateOf(false) }
 
 
     //val currentPlant = viewModel.currentPlant
@@ -77,6 +81,8 @@ fun PlantProfleMain(
 
     val photoListUiState by photoDisplayViewModel.photoListUiState.collectAsState()
     val photoList = photoListUiState.photoList
+
+    val notesListState by profileViewModel.plantNotesStream.collectAsState(initial = emptyList())
 
     Box(modifier = Modifier.fillMaxSize()){
         Image(
@@ -93,11 +99,13 @@ fun PlantProfleMain(
                 .fillMaxSize()
                 .padding(),
             topBar = {
-                ProfileTopBar(plant = currentPlant,
-                    canNavigateBack = navController.previousBackStackEntry != null,
-                    navigateUp = {
-                        navController.navigate(PlantMamaHomeDesintation.route)
-                    })
+                if(!showAddNoteDialog && !showAddReminderDialog){
+                    ProfileTopBar(plant = currentPlant,
+                        canNavigateBack = navController.previousBackStackEntry != null,
+                        navigateUp = {
+                            navController.navigate(PlantMamaHomeDesintation.route)
+                        })
+                }
             },
 
             content = { padding ->
@@ -146,7 +154,7 @@ fun PlantProfleMain(
                             ) {
                                 Column {
                                     IconButton(onClick = {
-                                        navController.navigate(CameraStartDestination.route)
+                                        navController.navigate("${CameraStartDestination.route}/false")
                                     }) {
                                         Icon(
                                             painter = painterResource(id = R.drawable.baseline_camera_alt_24),
@@ -167,6 +175,14 @@ fun PlantProfleMain(
                                         Icon(
                                             painter = painterResource(id = R.drawable.baseline_edit_24),
                                             contentDescription = "edit"
+                                        )
+                                    }
+                                    IconButton(onClick = {
+                                        showAddNoteDialog = true
+                                    }) {
+                                        Icon(
+                                            imageVector = Icons.AutoMirrored.Filled.List,
+                                            contentDescription = "Notes"
                                         )
                                     }
                                 }
@@ -194,7 +210,18 @@ fun PlantProfleMain(
                         )
                         SegmentedButtonItem(
                             selected = selectedIndex == 1,
-                            onClick = { selectedIndex = 1 },
+                            onClick = {selectedIndex = 1},
+                            label = {Text(text = "Notes")},
+                            icon = {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.List,
+                                    contentDescription = "Notes"
+                                )
+                            }
+                        )
+                        SegmentedButtonItem(
+                            selected = selectedIndex == 2,
+                            onClick = { selectedIndex = 2 },
                             label = { Text(text = "Reminders") },
                             icon = {
                                 Icon(
@@ -209,7 +236,11 @@ fun PlantProfleMain(
                         PhotoDisplay(photoList, "Oops! No photos are added yet for this plant. Tap the camera icon above to add a photo", navController = navController)
                     }
 
-                    if (selectedIndex == 1) {
+                    if(selectedIndex == 1){
+                        NoteListScreen(notesListState)
+                    }
+
+                    if (selectedIndex == 2) {
                         ReminderListScreen()
 
                     }
@@ -231,6 +262,14 @@ fun PlantProfleMain(
                         onConfirmation = { showEditPlantDialog = false },
                         { navController.navigate(CameraStartDestination.route) },
                         viewModel2 = viewModel
+                    )
+                }
+
+                if(showAddNoteDialog){
+                    AddNote(
+                        currentPlant.id,
+                        photoList,
+                        {showAddNoteDialog = false}
                     )
                 }
 
