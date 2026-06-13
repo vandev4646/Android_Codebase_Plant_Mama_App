@@ -237,7 +237,7 @@ fun PlantProfleMain(
                     }
 
                     if(selectedIndex == 1){
-                        NoteListScreen(notesListState)
+                        NoteListScreen(notesListState, navController = navController)
                     }
 
                     if (selectedIndex == 2) {

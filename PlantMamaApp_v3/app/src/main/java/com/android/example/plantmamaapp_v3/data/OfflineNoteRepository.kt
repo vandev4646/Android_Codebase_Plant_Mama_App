@@ -22,4 +22,12 @@ class OfflineNoteRepository(private val noteDao: NoteDao): NotesRepository  {
     override suspend fun deleteNote(note: Note) {
         return noteDao.deleteNote(note)
     }
+
+    override fun getNoteWithPhotoStream(id: Int): Flow<NoteWithPhotos?> {
+        return noteDao.getNoteWithPhotoStream(id)
+    }
+
+    override suspend fun getNoteWithPhoto(id: Int): NoteWithPhotos {
+        return noteDao.getNoteWithPhoto(id)
+    }
 }

@@ -186,6 +186,18 @@ fun PlantMamaApp(
                     composable(AllPhotosDesintation.route) {
                         AllPhotos(navController = navController)
                     }
+
+                    composable(
+                        route = NoteItemDestination.routeWithArgs,
+                        arguments = listOf(navArgument(NoteItemDestination.noteIdArg) {
+                            type = NavType.IntType
+                        })
+                    ) {
+                        NoteItem(
+                            onBack = {navController.popBackStack()},
+                            onEdit = {}
+                        )
+                    }
                 }
             }
 

@@ -26,4 +26,10 @@ interface NoteDao {
 
     @Delete
     suspend fun deleteNote(note: Note)
+
+    @Query("SELECT * from notes WHERE noteId = :id")
+    fun getNoteWithPhotoStream(id: Int): Flow<NoteWithPhotos?>
+
+    @Query("SELECT * from notes WHERE noteId = :id")
+    suspend fun getNoteWithPhoto(id: Int): NoteWithPhotos
 }
