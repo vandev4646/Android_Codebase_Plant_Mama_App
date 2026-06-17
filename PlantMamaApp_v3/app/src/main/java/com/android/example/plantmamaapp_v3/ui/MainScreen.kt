@@ -189,13 +189,28 @@ fun PlantMamaApp(
 
                     composable(
                         route = NoteItemDestination.routeWithArgs,
-                        arguments = listOf(navArgument(NoteItemDestination.noteIdArg) {
+                        arguments = listOf(navArgument(NoteItemDestination.noteIdArg) { type = NavType.IntType })
+                    ) { navBackStackEntry ->
+                        val noteId = checkNotNull(navBackStackEntry.arguments?.getInt(NoteItemDestination.noteIdArg))
+
+                        NoteItem(
+                            onBack = { navController.popBackStack() },
+                            onEdit = {
+                                navController.navigate("${NoteEditDestination.route}/$noteId")
+                            }
+                        )
+                    }
+
+                    composable(
+                        route = NoteEditDestination.routeWithArgs,
+                        arguments = listOf(navArgument(NoteEditDestination.noteIdArg) {
                             type = NavType.IntType
                         })
                     ) {
-                        NoteItem(
-                            onBack = {navController.popBackStack()},
-                            onEdit = {}
+                        EditNote(
+                            onNavigateBack = {
+                                navController.popBackStack()
+                                             },
                         )
                     }
                 }

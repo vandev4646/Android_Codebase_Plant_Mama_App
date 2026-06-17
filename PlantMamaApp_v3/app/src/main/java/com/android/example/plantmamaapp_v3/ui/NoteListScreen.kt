@@ -32,6 +32,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
@@ -52,18 +53,17 @@ fun NoteListScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(16.dp),
-                verticalArrangement = Arrangement.Center,
+                verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
                     text = "This plant has no notes yet",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = Color.Gray
+                    style = MaterialTheme.typography.titleLarge,
+
                 )
                 Text(
                     text = "Click the list icon above to add your first note!",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color.LightGray,
+                    style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier.padding(top = 4.dp)
                 )
             }

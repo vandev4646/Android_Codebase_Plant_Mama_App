@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -32,4 +33,11 @@ interface NoteDao {
 
     @Query("SELECT * from notes WHERE noteId = :id")
     suspend fun getNoteWithPhoto(id: Int): NoteWithPhotos
+
+    @Update
+    suspend fun updateNote(note: Note)
+
+    @Query("DELETE FROM note_photo_cross_ref WHERE noteId = :noteId")
+    suspend fun deleteNotePhotoCrossRefsForNote(noteId: Int)
+
 }

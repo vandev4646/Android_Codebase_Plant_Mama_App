@@ -20,6 +20,7 @@ class OfflineNoteRepository(private val noteDao: NoteDao): NotesRepository  {
     }
 
     override suspend fun deleteNote(note: Note) {
+        noteDao.deleteNotePhotoCrossRefsForNote(note.noteId)
         return noteDao.deleteNote(note)
     }
 
@@ -29,5 +30,13 @@ class OfflineNoteRepository(private val noteDao: NoteDao): NotesRepository  {
 
     override suspend fun getNoteWithPhoto(id: Int): NoteWithPhotos {
         return noteDao.getNoteWithPhoto(id)
+    }
+
+    override suspend fun updateNote(note: Note) {
+        return noteDao.updateNote(note)
+    }
+
+    override suspend fun deleteNotePhotoCrossRefsForNote(noteId: Int) {
+        return noteDao.deleteNotePhotoCrossRefsForNote(noteId)
     }
 }

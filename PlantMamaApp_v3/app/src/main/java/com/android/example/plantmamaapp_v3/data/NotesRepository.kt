@@ -15,4 +15,8 @@ interface NotesRepository {
     fun getNoteWithPhotoStream(id: Int): Flow<NoteWithPhotos?>
 
     suspend fun getNoteWithPhoto(id: Int): NoteWithPhotos
+
+    suspend fun updateNote(note: Note)
+
+    suspend fun deleteNotePhotoCrossRefsForNote(noteId: Int)
 }

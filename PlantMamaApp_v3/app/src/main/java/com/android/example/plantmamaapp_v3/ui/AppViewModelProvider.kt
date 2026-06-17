@@ -109,6 +109,14 @@ object AppViewModelProvider {
                 plantMamaApplication().container.notesRepository
             )
         }
+
+        initializer {
+            NoteEditViewModel(
+                this.createSavedStateHandle(),
+                plantMamaApplication().container.notesRepository,
+                plantMamaApplication().container.photosRepository
+            )
+        }
     }
 }
 
