@@ -29,6 +29,11 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.android.example.plantmamaapp_v3.R
+import com.android.example.plantmamaapp_v3.ui.auth.AuthResult
+import com.android.example.plantmamaapp_v3.ui.auth.AuthScreen
+import com.android.example.plantmamaapp_v3.ui.auth.AuthScreenDesintation
+import com.android.example.plantmamaapp_v3.ui.auth.AuthViewModel
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun PlantMamaApp(
@@ -48,6 +53,9 @@ fun PlantMamaApp(
     var showAddPlantDialog by rememberSaveable { mutableStateOf(false) }
     var showInfoDialog by rememberSaveable { mutableStateOf(false)}
     val isCameraActive = currentRoute?.startsWith(CameraStartDestination.route) == true
+
+    val authViewModel: AuthViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    val authResult by authViewModel.authResult.collectAsState()
 
     Box(modifier = Modifier.fillMaxSize()){
         Image(
@@ -70,7 +78,14 @@ fun PlantMamaApp(
                         //canNavigateBack = navController.previousBackStackEntry != null,
                         navigateUp = { navController.navigateUp() },
                         onAddPlantClick = { showAddPlantDialog = true},
-                        onInfoClick = { showInfoDialog = true }
+                        onInfoClick = { showInfoDialog = true },
+                        onSignOut = {
+                            FirebaseAuth.getInstance().signOut()
+                            authViewModel.clearResult()
+                            navController.navigate(AuthScreenDesintation.route){
+                                popUpTo(PlantMamaHomeDesintation.route) { inclusive = true }
+                            }
+                        }
                     )
                 }
             },
@@ -87,7 +102,7 @@ fun PlantMamaApp(
 
                 NavHost(
                     navController = navController,
-                    startDestination = PlantMamaHomeDesintation.route,
+                    startDestination = if(authResult is AuthResult.Sucess) PlantMamaHomeDesintation.route else AuthScreenDesintation.route,
                     modifier = Modifier.padding(contentPadding)
                 ) {
                     composable(route = PlantMamaHomeDesintation.route) {
@@ -211,6 +226,18 @@ fun PlantMamaApp(
                             onNavigateBack = {
                                 navController.popBackStack()
                                              },
+                        )
+                    }
+
+                    composable(
+                        route = AuthScreenDesintation.route
+                    ){
+                        AuthScreen(
+                            onAuthSucess = {navController.navigate(PlantMamaHomeDesintation.route){
+                                popUpTo(AuthScreenDesintation.route) { inclusive = true }
+                            }
+                            },
+                            viewModel = authViewModel
                         )
                     }
                 }

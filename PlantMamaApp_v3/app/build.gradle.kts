@@ -6,6 +6,8 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.plugin.compose")
     id("androidx.navigation.safeargs.kotlin")
+    //for Firebase
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -119,4 +121,9 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.6.1")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
     debugImplementation("androidx.compose.ui:ui-tooling")
+
+    //Firebase
+    implementation("com.google.firebase:firebase-auth:23.1.0")
+    implementation("com.google.firebase:firebase-firestore:25.1.0")
+
 }

@@ -4,10 +4,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.PhotoLibrary
@@ -47,6 +49,7 @@ fun PlantTopAppBar(
     navigateUp: () -> Unit,
     onAddPlantClick: () -> Unit,
     onInfoClick: () -> Unit,
+    onSignOut: () -> Unit,
     modifier: Modifier = Modifier
 ) {
 
@@ -55,7 +58,8 @@ fun PlantTopAppBar(
         ToolbarItem("All Reminders", Icons.Filled.Notifications, AllRemindersDesintation.route),
         ToolbarItem("All Photos", Icons.Filled.PhotoLibrary, AllPhotosDesintation.route),
         ToolbarItem("Add New Plant", Icons.Filled.Add, "add_plant"),
-                ToolbarItem("Info", Icons.Filled.Info, "info")
+                ToolbarItem("Info", Icons.Filled.Info, "info"),
+        ToolbarItem("Sign Out", Icons.AutoMirrored.Filled.Logout, "sign_out")
     )
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
@@ -90,7 +94,8 @@ fun PlantTopAppBar(
                                 onAddPlantClick()
                             } else if (item.route == "info"){
                                 onInfoClick()
-                            }
+                            } else if(item.route == "sign_out")
+                                onSignOut()
                             else if (currentRoute != item.route) {
                                 navController.navigate(item.route) {
                                     // Pop up to the start destination to avoid building up a massive stack

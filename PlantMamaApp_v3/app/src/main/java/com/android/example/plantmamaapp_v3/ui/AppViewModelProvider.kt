@@ -7,6 +7,7 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.android.example.plantmamaapp_v3.PlantMamaApplication
+import com.android.example.plantmamaapp_v3.ui.auth.AuthViewModel
 
 object AppViewModelProvider {
     val Factory: ViewModelProvider.Factory = viewModelFactory {
@@ -116,6 +117,10 @@ object AppViewModelProvider {
                 plantMamaApplication().container.notesRepository,
                 plantMamaApplication().container.photosRepository
             )
+        }
+
+        initializer {
+            AuthViewModel()
         }
     }
 }
