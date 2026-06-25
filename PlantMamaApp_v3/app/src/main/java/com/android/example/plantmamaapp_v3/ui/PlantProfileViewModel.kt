@@ -5,9 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.example.plantmamaapp_v3.data.NoteWithPhotos
 import com.android.example.plantmamaapp_v3.data.NotesRepository
-import com.android.example.plantmamaapp_v3.data.OfflineNoteRepository
 import com.android.example.plantmamaapp_v3.data.Plant
 import com.android.example.plantmamaapp_v3.data.PlantsRepository
+import com.android.example.plantmamaapp_v3.ui.photo.PlantProfileDestination
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

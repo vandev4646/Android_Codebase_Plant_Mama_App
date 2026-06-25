@@ -1,4 +1,4 @@
-package com.android.example.plantmamaapp_v3.ui
+package com.android.example.plantmamaapp_v3.ui.note
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -41,10 +41,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
-import com.android.example.plantmamaapp_v3.data.Photo
+import com.android.example.plantmamaapp_v3.ui.AppViewModelProvider
 import com.android.example.plantmamaapp_v3.ui.navigation.NavigationDestination
 import java.text.SimpleDateFormat
 import java.util.Date

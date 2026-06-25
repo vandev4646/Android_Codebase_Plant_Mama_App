@@ -1,4 +1,4 @@
-package com.android.example.plantmamaapp_v3.ui
+package com.android.example.plantmamaapp_v3.ui.photo
 
 import android.net.Uri
 import androidx.compose.foundation.layout.Arrangement
@@ -19,6 +19,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
+import com.android.example.plantmamaapp_v3.ui.AppViewModelProvider
+import com.android.example.plantmamaapp_v3.ui.MainScreenViewModel
 import com.android.example.plantmamaapp_v3.ui.navigation.NavigationDestination
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.Image as Image1

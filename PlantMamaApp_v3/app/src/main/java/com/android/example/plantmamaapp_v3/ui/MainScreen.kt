@@ -33,6 +33,24 @@ import com.android.example.plantmamaapp_v3.ui.auth.AuthResult
 import com.android.example.plantmamaapp_v3.ui.auth.AuthScreen
 import com.android.example.plantmamaapp_v3.ui.auth.AuthScreenDesintation
 import com.android.example.plantmamaapp_v3.ui.auth.AuthViewModel
+import com.android.example.plantmamaapp_v3.ui.note.EditNote
+import com.android.example.plantmamaapp_v3.ui.note.NoteEditDestination
+import com.android.example.plantmamaapp_v3.ui.note.NoteItem
+import com.android.example.plantmamaapp_v3.ui.note.NoteItemDestination
+import com.android.example.plantmamaapp_v3.ui.photo.AllPhotos
+import com.android.example.plantmamaapp_v3.ui.photo.AllPhotosDesintation
+import com.android.example.plantmamaapp_v3.ui.photo.InspectPhotoScreen
+import com.android.example.plantmamaapp_v3.ui.photo.InspectPhotoScreenDestination
+import com.android.example.plantmamaapp_v3.ui.photo.PlantProfileDestination
+import com.android.example.plantmamaapp_v3.ui.photo.PlantProfleMain
+import com.android.example.plantmamaapp_v3.ui.photo.SelectProfilePicDestination
+import com.android.example.plantmamaapp_v3.ui.photo.SelectProfilePicScreen
+import com.android.example.plantmamaapp_v3.ui.photo.SelectedPhotoScreen
+import com.android.example.plantmamaapp_v3.ui.photo.SelectedPhotoScreenDestination
+import com.android.example.plantmamaapp_v3.ui.photo.SelectedSinglePhotoScreen
+import com.android.example.plantmamaapp_v3.ui.photo.SelectedSinglePhotoScreenDestination
+import com.android.example.plantmamaapp_v3.ui.reminder.AllReminders
+import com.android.example.plantmamaapp_v3.ui.reminder.AllRemindersDesintation
 import com.google.firebase.auth.FirebaseAuth
 
 @Composable
@@ -206,7 +224,8 @@ fun PlantMamaApp(
                         route = NoteItemDestination.routeWithArgs,
                         arguments = listOf(navArgument(NoteItemDestination.noteIdArg) { type = NavType.IntType })
                     ) { navBackStackEntry ->
-                        val noteId = checkNotNull(navBackStackEntry.arguments?.getInt(NoteItemDestination.noteIdArg))
+                        val noteId = checkNotNull(navBackStackEntry.arguments?.getInt(
+                            NoteItemDestination.noteIdArg))
 
                         NoteItem(
                             onBack = { navController.popBackStack() },
@@ -225,7 +244,7 @@ fun PlantMamaApp(
                         EditNote(
                             onNavigateBack = {
                                 navController.popBackStack()
-                                             },
+                            },
                         )
                     }
 

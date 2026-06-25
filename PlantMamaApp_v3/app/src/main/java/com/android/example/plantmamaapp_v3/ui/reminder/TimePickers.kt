@@ -1,4 +1,4 @@
-package com.android.example.plantmamaapp_v3.ui
+package com.android.example.plantmamaapp_v3.ui.reminder
 
 /*
  * Copyright 2024 The Android Open Source Project

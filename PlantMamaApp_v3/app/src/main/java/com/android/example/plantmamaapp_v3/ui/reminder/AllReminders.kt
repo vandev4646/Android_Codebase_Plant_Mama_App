@@ -1,4 +1,4 @@
-package com.android.example.plantmamaapp_v3.ui
+package com.android.example.plantmamaapp_v3.ui.reminder
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.android.example.plantmamaapp_v3.R
+import com.android.example.plantmamaapp_v3.ui.AppViewModelProvider
 import com.android.example.plantmamaapp_v3.ui.navigation.NavigationDestination
 
 object AllRemindersDesintation : NavigationDestination {
@@ -45,11 +46,12 @@ fun AllReminders(modifier: Modifier = Modifier, navController: NavController){
                 )
             } else {
                 Box(Modifier.fillMaxSize().padding(top = 16.dp), contentAlignment = Alignment.TopStart) {
-                ReminderList(
-                    reminderList = reminderList,
-                    modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.padding_small)),
+                    ReminderList(
+                        reminderList = reminderList,
+                        modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.padding_small)),
 
-                    )}
+                        )
+                }
             }
         }
     }

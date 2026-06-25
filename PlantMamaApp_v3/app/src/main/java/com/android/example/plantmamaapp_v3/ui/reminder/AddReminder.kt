@@ -1,4 +1,4 @@
-package com.android.example.plantmamaapp_v3.ui
+package com.android.example.plantmamaapp_v3.ui.reminder
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -76,7 +76,7 @@ fun AddReminder(
     onDismissRequest: () -> Unit,
     onConfirmation: () -> Unit,
     currentPlant: Plant,
-    reminderViewModel: ReminderEntryViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    reminderViewModel: ReminderEntryViewModel = viewModel(factory = _root_ide_package_.com.android.example.plantmamaapp_v3.ui.AppViewModelProvider.Factory)
 ) {
     val coroutineScope = rememberCoroutineScope()
     val reminderUiState = reminderViewModel.reminderUiState
@@ -224,7 +224,7 @@ fun AddReminder(
 
 
 @Composable
-fun DateTimePickerComponent(reminderViewModel: ReminderEntryViewModel = viewModel(factory = AppViewModelProvider.Factory)) {
+fun DateTimePickerComponent(reminderViewModel: ReminderEntryViewModel = viewModel(factory = _root_ide_package_.com.android.example.plantmamaapp_v3.ui.AppViewModelProvider.Factory)) {
 
     fun getCurrentDateInMillisUTC(): Long {
         val currentDate = LocalDate.now(ZoneOffset.UTC)

@@ -34,6 +34,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.android.example.plantmamaapp_v3.ui.navigation.NavigationDestination
+import com.android.example.plantmamaapp_v3.ui.photo.SelectedPhotoScreenDestination
+import com.android.example.plantmamaapp_v3.ui.photo.SelectedSinglePhotoScreenDestination
 
 
 object CameraStartDestination : NavigationDestination {

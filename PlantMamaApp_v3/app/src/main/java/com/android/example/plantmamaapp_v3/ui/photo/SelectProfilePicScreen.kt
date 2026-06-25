@@ -1,17 +1,9 @@
-package com.android.example.plantmamaapp_v3.ui
+package com.android.example.plantmamaapp_v3.ui.photo
 
-import android.content.ContentValues
-import android.content.Context
-import android.os.Build
-import android.provider.MediaStore
-import android.util.Log
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.core.CameraSelector
-import androidx.camera.core.ImageCapture
-import androidx.camera.core.ImageCaptureException
 import androidx.camera.view.CameraController
 import androidx.camera.view.LifecycleCameraController
 import androidx.compose.foundation.layout.Arrangement
@@ -37,12 +29,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import com.android.example.plantmamaapp_v3.R
+import com.android.example.plantmamaapp_v3.ui.CameraPreview
+import com.android.example.plantmamaapp_v3.ui.MainScreenViewModel
 import com.android.example.plantmamaapp_v3.ui.navigation.NavigationDestination
-import java.text.SimpleDateFormat
-import java.util.Locale
+import com.android.example.plantmamaapp_v3.ui.takePhoto
 
 
 object SelectProfilePicDestination : NavigationDestination {
@@ -149,7 +141,7 @@ fun SelectProfilePicScreen(
                             controller = controller,
                             context = context,
                             viewModelPlantMamaMainScreen = viewModelPlantMamaMainScreen,
-                            navigationAfter = {navController.popBackStack()}
+                            navigationAfter = { navController.popBackStack() }
                         )
                         navController.popBackStack()
 

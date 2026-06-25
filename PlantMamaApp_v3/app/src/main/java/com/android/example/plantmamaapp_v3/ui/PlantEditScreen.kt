@@ -45,6 +45,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.android.example.plantmamaapp_v3.R
 import com.android.example.plantmamaapp_v3.ui.navigation.NavigationDestination
+import com.android.example.plantmamaapp_v3.ui.photo.PhotoViewModel
 import kotlinx.coroutines.launch
 
 object PlantEditDestination : NavigationDestination {

@@ -1,4 +1,4 @@
-package com.android.example.plantmamaapp_v3.ui
+package com.android.example.plantmamaapp_v3.ui.note
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -6,10 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.android.example.plantmamaapp_v3.data.Note
 import com.android.example.plantmamaapp_v3.data.NoteWithPhotos
 import com.android.example.plantmamaapp_v3.data.NotesRepository
-import com.android.example.plantmamaapp_v3.data.OfflineNoteRepository
-import com.android.example.plantmamaapp_v3.data.Plant
-import com.android.example.plantmamaapp_v3.data.PlantsRepository
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map

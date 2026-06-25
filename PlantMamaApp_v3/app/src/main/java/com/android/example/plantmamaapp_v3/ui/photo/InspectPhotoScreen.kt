@@ -1,4 +1,4 @@
-package com.android.example.plantmamaapp_v3.ui
+package com.android.example.plantmamaapp_v3.ui.photo
 
 import android.net.Uri
 import androidx.compose.foundation.Image
@@ -18,6 +18,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
+import com.android.example.plantmamaapp_v3.ui.AppViewModelProvider
+import com.android.example.plantmamaapp_v3.ui.MainScreenViewModel
 import com.android.example.plantmamaapp_v3.ui.navigation.NavigationDestination
 import kotlinx.coroutines.launch
 
@@ -25,7 +27,7 @@ import kotlinx.coroutines.launch
 object InspectPhotoScreenDestination : NavigationDestination {
     override val route = "inspect_photo_screen"
     const val itemIdArg = "itemId"
-    val routeWithArgs = "${InspectPhotoScreenDestination.route}/{$itemIdArg}"
+    val routeWithArgs = "${route}/{$itemIdArg}"
 }
 
 @Composable

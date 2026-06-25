@@ -1,4 +1,4 @@
-package com.android.example.plantmamaapp_v3.ui
+package com.android.example.plantmamaapp_v3.ui.photo
 
 import android.net.Uri
 import androidx.compose.runtime.getValue
@@ -6,15 +6,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.android.example.plantmamaapp_v3.data.Photo
 import com.android.example.plantmamaapp_v3.data.PhotosRepository
-import com.android.example.plantmamaapp_v3.data.ReminderRepository
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.launch
 
 class PhotoViewModel(
     savedStateHandle: SavedStateHandle,
@@ -69,7 +62,3 @@ class PhotoViewModel(
 
 
 }
-
-
-
-

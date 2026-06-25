@@ -1,4 +1,4 @@
-package com.android.example.plantmamaapp_v3.ui
+package com.android.example.plantmamaapp_v3.ui.photo
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -16,8 +16,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.List
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -49,6 +47,20 @@ import com.android.example.plantmamaapp_v3.data.Plant
 import com.android.example.plantmamaapp_v3.ui.navigation.NavigationDestination
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.android.example.plantmamaapp_v3.ui.AddPlant
+import com.android.example.plantmamaapp_v3.ui.AppViewModelProvider
+import com.android.example.plantmamaapp_v3.ui.CameraStartDestination
+import com.android.example.plantmamaapp_v3.ui.MainScreenViewModel
+import com.android.example.plantmamaapp_v3.ui.PlantEditDestination
+import com.android.example.plantmamaapp_v3.ui.PlantMamaHomeDesintation
+import com.android.example.plantmamaapp_v3.ui.PlantProfileViewModel
+import com.android.example.plantmamaapp_v3.ui.ProfileTopBar
+import com.android.example.plantmamaapp_v3.ui.reminder.ReminderListScreen
+import com.android.example.plantmamaapp_v3.ui.SegmentedButtonItem
+import com.android.example.plantmamaapp_v3.ui.SegmentedButtons
+import com.android.example.plantmamaapp_v3.ui.note.AddNote
+import com.android.example.plantmamaapp_v3.ui.note.NoteListScreen
+import com.android.example.plantmamaapp_v3.ui.reminder.AddReminder
 import java.time.LocalDate
 import java.time.Period
 import java.time.ZoneId
@@ -100,7 +112,8 @@ fun PlantProfleMain(
                 .padding(),
             topBar = {
                 if(!showAddNoteDialog && !showAddReminderDialog){
-                    ProfileTopBar(plant = currentPlant,
+                    ProfileTopBar(
+                        plant = currentPlant,
                         canNavigateBack = navController.previousBackStackEntry != null,
                         navigateUp = {
                             navController.navigate(PlantMamaHomeDesintation.route)
@@ -210,8 +223,8 @@ fun PlantProfleMain(
                         )
                         SegmentedButtonItem(
                             selected = selectedIndex == 1,
-                            onClick = {selectedIndex = 1},
-                            label = {Text(text = "Notes")},
+                            onClick = { selectedIndex = 1 },
+                            label = { Text(text = "Notes") },
                             icon = {
                                 Icon(
                                     imageVector = Icons.AutoMirrored.Filled.List,
@@ -233,7 +246,11 @@ fun PlantProfleMain(
                     }
                     Spacer(modifier = Modifier.size(dimensionResource(R.dimen.padding_medium)))
                     if (selectedIndex == 0) {
-                        PhotoDisplay(photoList, "Oops! No photos are added yet for this plant. Tap the camera icon above to add a photo", navController = navController)
+                        PhotoDisplay(
+                            photoList,
+                            "Oops! No photos are added yet for this plant. Tap the camera icon above to add a photo",
+                            navController = navController
+                        )
                     }
 
                     if(selectedIndex == 1){
@@ -269,7 +286,7 @@ fun PlantProfleMain(
                     AddNote(
                         currentPlant.id,
                         photoList,
-                        {showAddNoteDialog = false}
+                        { showAddNoteDialog = false }
                     )
                 }
 

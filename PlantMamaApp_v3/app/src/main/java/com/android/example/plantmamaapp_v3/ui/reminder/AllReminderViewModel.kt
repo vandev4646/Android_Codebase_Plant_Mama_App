@@ -1,4 +1,4 @@
-package com.android.example.plantmamaapp_v3.ui
+package com.android.example.plantmamaapp_v3.ui.reminder
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel

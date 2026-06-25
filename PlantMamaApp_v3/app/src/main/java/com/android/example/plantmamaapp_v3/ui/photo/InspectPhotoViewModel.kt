@@ -1,4 +1,4 @@
-package com.android.example.plantmamaapp_v3.ui
+package com.android.example.plantmamaapp_v3.ui.photo
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -23,7 +23,7 @@ class InspectPhotoViewModel(
 
     /**
      * Holds reminder list ui state. The list of items are retrieved from [ReminderRepository] and mapped to
-     * [ReminderListUiState]
+     * [com.android.example.plantmamaapp_v3.ui.reminder.ReminderListUiState]
      */
     val photoViewUiState: StateFlow<PhotoViewUiState> =
         photosRepository.getPhotoStream(photoId).map { photo ->

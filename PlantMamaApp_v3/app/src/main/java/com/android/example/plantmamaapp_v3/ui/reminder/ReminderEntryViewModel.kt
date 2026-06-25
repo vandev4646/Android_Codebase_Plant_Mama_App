@@ -19,7 +19,7 @@ This code was largely inspired thought the android basics class. I included the 
  */
 
 
-package com.android.example.plantmamaapp_v3.ui
+package com.android.example.plantmamaapp_v3.ui.reminder
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -103,7 +103,7 @@ data class ReminderDetails(
 )
 
 /**
- * Extension function to convert [PlantUiState] to [Plant]. If the value of [ItemDetails.price] is
+ * Extension function to convert [com.android.example.plantmamaapp_v3.ui.PlantUiState] to [Plant]. If the value of [ItemDetails.price] is
  * not a valid [Double], then the price will be set to 0.0. Similarly if the value of
  * [ItemUiState] is not a valid [Int], then the quantity will be set to 0
  */
@@ -117,7 +117,7 @@ fun ReminderDetails.toItem(): Reminder = Reminder(
 
 
 /**
- * Extension function to convert [Plant] to [PlantDetails]
+ * Extension function to convert [Plant] to [com.android.example.plantmamaapp_v3.ui.PlantDetails]
  */
 fun Reminder.toReminderDetails(): ReminderDetails = ReminderDetails(
     wmIdentifier = wmIdentifier,

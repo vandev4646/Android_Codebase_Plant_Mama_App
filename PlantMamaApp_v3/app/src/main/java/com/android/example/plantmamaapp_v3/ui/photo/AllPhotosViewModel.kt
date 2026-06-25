@@ -1,4 +1,4 @@
-package com.android.example.plantmamaapp_v3.ui
+package com.android.example.plantmamaapp_v3.ui.photo
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -10,21 +10,17 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
-class PhotoDisplayViewModel(
+class AllPhotosViewModel(
     savedStateHandle: SavedStateHandle,
     photosRepository: PhotosRepository
 ) : ViewModel() {
 
-    val photosRepository = photosRepository
-
-    private val plantID: Int = checkNotNull(savedStateHandle[PlantProfileDestination.itemIdArg])
-
-    val photoListUiState: StateFlow<PhotoListUiState> =
-        photosRepository.getAllPhotoStreamByPlantId(plantID).map { PhotoListUiState(it) }
+    val allPhotosUiState: StateFlow<AllPhotosUiState> =
+        photosRepository.getAllPhotosStream().map { AllPhotosUiState(it) }
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
-                initialValue = PhotoListUiState()
+                initialValue = AllPhotosUiState()
             )
 
     companion object {
@@ -35,4 +31,4 @@ class PhotoDisplayViewModel(
 /**
  * Ui State for HomeScreen
  */
-data class PhotoListUiState(val photoList: List<Photo> = listOf())
+data class AllPhotosUiState(val photoList: List<Photo> = listOf())

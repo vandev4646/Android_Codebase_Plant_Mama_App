@@ -1,10 +1,11 @@
-package com.android.example.plantmamaapp_v3.ui
+package com.android.example.plantmamaapp_v3.ui.reminder
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.example.plantmamaapp_v3.data.Reminder
 import com.android.example.plantmamaapp_v3.data.ReminderRepository
+import com.android.example.plantmamaapp_v3.ui.photo.PlantProfileDestination
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map

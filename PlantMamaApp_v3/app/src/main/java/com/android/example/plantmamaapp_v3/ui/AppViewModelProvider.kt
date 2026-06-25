@@ -8,6 +8,17 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.android.example.plantmamaapp_v3.PlantMamaApplication
 import com.android.example.plantmamaapp_v3.ui.auth.AuthViewModel
+import com.android.example.plantmamaapp_v3.ui.note.NoteEditViewModel
+import com.android.example.plantmamaapp_v3.ui.note.NoteItemViewModel
+import com.android.example.plantmamaapp_v3.ui.note.NoteViewModel
+import com.android.example.plantmamaapp_v3.ui.photo.AllPhotosViewModel
+import com.android.example.plantmamaapp_v3.ui.photo.InspectPhotoViewModel
+import com.android.example.plantmamaapp_v3.ui.photo.PhotoDisplayViewModel
+import com.android.example.plantmamaapp_v3.ui.photo.PhotoViewModel
+import com.android.example.plantmamaapp_v3.ui.reminder.AllReminderViewModel
+import com.android.example.plantmamaapp_v3.ui.reminder.DeleteReminderViewModel
+import com.android.example.plantmamaapp_v3.ui.reminder.ReminderEntryViewModel
+import com.android.example.plantmamaapp_v3.ui.reminder.ReminderListViewModel
 
 object AppViewModelProvider {
     val Factory: ViewModelProvider.Factory = viewModelFactory {

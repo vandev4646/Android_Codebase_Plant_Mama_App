@@ -1,4 +1,4 @@
-package com.android.example.plantmamaapp_v3.ui
+package com.android.example.plantmamaapp_v3.ui.photo
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -26,6 +26,8 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.android.example.plantmamaapp_v3.R
 import com.android.example.plantmamaapp_v3.data.Photo
+import com.android.example.plantmamaapp_v3.ui.AppViewModelProvider
+import com.android.example.plantmamaapp_v3.ui.MainScreenViewModel
 
 @Composable
 fun PhotoDisplay(
