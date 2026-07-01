@@ -12,7 +12,9 @@ data class Reminder(
     val plantID: Int,
     val title: String,
     val date: String,
-    val time: String
+    val time: String,
+    val lastUpdated: Long = System.currentTimeMillis(),
+    val syncState: SyncState = SyncState.NOT_SYNCED
 )
 
 data class ReminderWM(

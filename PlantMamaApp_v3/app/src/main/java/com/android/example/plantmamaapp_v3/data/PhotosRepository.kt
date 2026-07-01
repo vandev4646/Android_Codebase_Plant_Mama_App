@@ -1,5 +1,8 @@
 package com.android.example.plantmamaapp_v3.data
 
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -37,4 +40,14 @@ interface PhotosRepository {
      * Update item in the data source
      */
     suspend fun updatePhoto(photo: Photo)
+
+    suspend fun getUnsyncedPhotos(): List<Photo>
+
+    suspend fun updateSyncState(id: Int, state: String)
+
+    suspend fun upsertPhoto(photo: Photo)
+
+    suspend fun getLastUpdatedTime(id: Int): Long?
+
+    suspend fun getItemNonFlow(id: Int): Photo
 }

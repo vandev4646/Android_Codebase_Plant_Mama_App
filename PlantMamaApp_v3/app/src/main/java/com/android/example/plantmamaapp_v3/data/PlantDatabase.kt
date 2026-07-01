@@ -7,13 +7,14 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import androidx.work.impl.Migration_3_4
 
 /**
  * Database class with a singleton Instance object.
  */
 @Database(
     entities = [Plant::class, Reminder::class, Photo::class, Note::class, NotePhotoCrossRef::class],
-    version = 3,
+    version = 4,
     exportSchema = false
 )
 @TypeConverters(Converters::class)
@@ -78,12 +79,40 @@ abstract class PlantDatabase : RoomDatabase() {
             }
         }
 
+        private val Migration_3_4 = object: Migration(3,4){
+            override fun migrate(db: SupportSQLiteDatabase) {
+                // Add tracking columns to 'plants'
+                db.execSQL("ALTER TABLE plants ADD COLUMN lastUpdated INTEGER NOT NULL DEFAULT 0")
+                db.execSQL("ALTER TABLE plants ADD COLUMN syncState TEXT NOT NULL DEFAULT 'NOT_SYNCED'")
+
+                // Add tracking columns to 'notes'
+                db.execSQL("ALTER TABLE notes ADD COLUMN lastUpdated INTEGER NOT NULL DEFAULT 0")
+                db.execSQL("ALTER TABLE notes ADD COLUMN syncState TEXT NOT NULL DEFAULT 'NOT_SYNCED'")
+
+                // Add tracking columns to 'photos'
+                db.execSQL("ALTER TABLE photos ADD COLUMN lastUpdated INTEGER NOT NULL DEFAULT 0")
+                db.execSQL("ALTER TABLE photos ADD COLUMN syncState TEXT NOT NULL DEFAULT 'NOT_SYNCED'")
+
+                // Add tracking columns to 'reminders'
+                db.execSQL("ALTER TABLE reminders ADD COLUMN lastUpdated INTEGER NOT NULL DEFAULT 0")
+                db.execSQL("ALTER TABLE reminders ADD COLUMN syncState TEXT NOT NULL DEFAULT 'NOT_SYNCED'")
+
+                // Set the default lastUpdated timestamp to the current time for existing rows
+                val currentTime = System.currentTimeMillis()
+                db.execSQL("UPDATE plants SET lastUpdated = $currentTime")
+                db.execSQL("UPDATE notes SET lastUpdated = $currentTime")
+                db.execSQL("UPDATE photos SET lastUpdated = $currentTime")
+                db.execSQL("UPDATE reminders SET lastUpdated = $currentTime")
+            }
+
+        }
+
         fun getDatabase(context: Context): PlantDatabase {
             // if the Instance is not null, return it, otherwise create a new database instance.
             return Instance ?: synchronized(this) {
                 Room.databaseBuilder(context, PlantDatabase::class.java, "plant_database")
                     //Migration for adding notes, updating from plant notes to description, changing from age to date purchased
-                    .addMigrations(MIGRATION_2_3)
+                    .addMigrations(MIGRATION_2_3, Migration_3_4)
                     .build()
                     .also { Instance = it }
             }

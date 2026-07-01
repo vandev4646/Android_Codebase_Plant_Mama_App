@@ -131,7 +131,9 @@ object AppViewModelProvider {
         }
 
         initializer {
-            AuthViewModel()
+            AuthViewModel(
+                plantMamaApplication().container.syncRepository
+            )
         }
     }
 }

@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.android.example.plantmamaapp_v3.data.SyncRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,7 +13,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
-class AuthViewModel: ViewModel() {
+class AuthViewModel(
+    private val syncRepository: SyncRepository
+): ViewModel() {
 
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
     private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
@@ -44,7 +47,7 @@ class AuthViewModel: ViewModel() {
 
         viewModelScope.launch {
             try{
-                if (isSignUpMode){
+                val userId = if (isSignUpMode){
                     //create account
                     val result = auth.createUserWithEmailAndPassword(email, password).await()
                     val userId = result.user?.uid
@@ -57,10 +60,20 @@ class AuthViewModel: ViewModel() {
                         )
                         firestore.collection("users").document(userId).set(userProfile).await()
                     }
+                    userId
                 }
                 else{
-                    auth.signInWithEmailAndPassword(email, password).await()
+                    val result = auth.signInWithEmailAndPassword(email, password).await()
+                    result.user?.uid
 
+                }
+
+                if(userId != null){
+                    if(isSignUpMode){
+                        syncRepository.syncOnSignUp()
+                    } else{
+                        syncRepository.syncOnSignIn(userId)
+                    }
                 }
                 _authResult.value = AuthResult.Sucess
             } catch (e: Exception){

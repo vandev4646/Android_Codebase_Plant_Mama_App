@@ -18,8 +18,8 @@ android {
         applicationId = "com.plantmamaapp_v3"
         minSdk = 26
         targetSdk = 35
-        versionCode = 9
-        versionName = "1.9"
+        versionCode = 2
+        versionName = "2.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -114,6 +114,7 @@ dependencies {
 
     // Background Work Manager
     implementation("androidx.work:work-runtime-ktx:2.9.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-guava:1.7.3")
 
     // Testing Frameworks
     testImplementation("junit:junit:4.13.2")

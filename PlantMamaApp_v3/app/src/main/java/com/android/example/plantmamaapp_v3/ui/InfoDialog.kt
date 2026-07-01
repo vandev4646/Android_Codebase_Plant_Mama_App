@@ -15,9 +15,11 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Cloud
 import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Card
@@ -55,9 +57,9 @@ fun InfoDialog(
 ){
 
     val items = listOf(
-        InfoGroup("Your Data is Yours", Icons.Filled.Shield, "No information is collected. Everything is stored on your device."),
-        InfoGroup("Photo Storage", Icons.Filled.PhotoLibrary, "Photos are stored in a 'Plant Mama' album. Even if the app is deleted, your photos stay in your library."),
-        InfoGroup("Important", Icons.Outlined.Warning, "If you delete the app your plant records are permanently lost, as we do not use cloud storage.")
+        InfoGroup("Plant Info Storage", Icons.Filled.Cloud, "Information about your plant, notes, and reminders are stored locally and backed to the cloud. This ensures you do not lose your plant info even if you lose your device."),
+        InfoGroup("Photo Storage", Icons.Filled.PhotoLibrary, "Photos are stored in a 'Plant Mama' album. Photos are only stored on device. If you ever wish to use the app on a different device you need to ensure the photos in the 'Plant Mama' album are copied over."),
+        InfoGroup("Let Me Know Your Thoughts", Icons.Outlined.Email, "This app is my passion project. I would love to your hear your thoughts or suggestions. If you notice a bug or have a feature you would like to see, you can reach me at v.c.elzen@gmail.com")
     )
 
     BasicAlertDialog(

@@ -9,5 +9,7 @@ data class Photo(
     val id: Int = 0,
     val plantId: Int,
     val uri: String,
+    val lastUpdated: Long = System.currentTimeMillis(),
+    val syncState: SyncState = SyncState.NOT_SYNCED
 )
 

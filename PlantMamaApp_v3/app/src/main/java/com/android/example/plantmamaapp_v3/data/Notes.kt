@@ -28,7 +28,9 @@ data class Note (
     @PrimaryKey(autoGenerate = true) val noteId: Int = 0,
     val plantId: Int, //foreign key linked to plant
     val title: String,
-    @TypeConverters(Converters::class) val date: Date
+    @TypeConverters(Converters::class) val date: Date,
+    val lastUpdated: Long = System.currentTimeMillis(),
+    val syncState: SyncState = SyncState.NOT_SYNCED
 )
 
 //A Junction table to handle the Many-to-Many relationship between Notes and Photos

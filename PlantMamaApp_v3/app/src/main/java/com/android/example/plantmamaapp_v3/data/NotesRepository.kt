@@ -1,5 +1,8 @@
 package com.android.example.plantmamaapp_v3.data
 
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
 import kotlinx.coroutines.flow.Flow
 
 interface NotesRepository {
@@ -19,4 +22,14 @@ interface NotesRepository {
     suspend fun updateNote(note: Note)
 
     suspend fun deleteNotePhotoCrossRefsForNote(noteId: Int)
+
+    suspend fun getUnsyncedNotes(): List<NoteWithPhotos>
+
+    suspend fun updateSyncState(id: Int, state: String)
+
+    suspend fun upsertNote(note: Note)
+
+    suspend fun insertCrossRef(crossRef: NotePhotoCrossRef)
+
+    suspend fun getLastUpdatedTime(id: Int): Long?
 }

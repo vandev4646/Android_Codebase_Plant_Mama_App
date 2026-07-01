@@ -9,6 +9,10 @@ import android.content.Intent
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.work.Data
+import androidx.work.ExistingWorkPolicy
+import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.WorkManager
 import com.android.example.plantmamaapp_v3.CHANNEL_ID
 import com.android.example.plantmamaapp_v3.MainActivity
 import com.android.example.plantmamaapp_v3.NOTIFICATION_ID
@@ -17,6 +21,10 @@ import com.android.example.plantmamaapp_v3.R
 import com.android.example.plantmamaapp_v3.REQUEST_CODE
 import com.android.example.plantmamaapp_v3.VERBOSE_NOTIFICATION_CHANNEL_DESCRIPTION
 import com.android.example.plantmamaapp_v3.VERBOSE_NOTIFICATION_CHANNEL_NAME
+import com.android.example.plantmamaapp_v3.data.Reminder
+import java.text.SimpleDateFormat
+import java.util.Locale
+import java.util.concurrent.TimeUnit
 
 
 fun makePlantReminderNotification(
@@ -74,5 +82,36 @@ fun createPendingIntent(appContext: Context): PendingIntent {
         REQUEST_CODE,
         intent,
         flags
+    )
+}
+
+//reschedule reminders based on information from firebase
+fun scheduleReminderWork(context: Context, reminder: Reminder, plantName: String) {
+    // Calculate the initial delay based on your saved string date and time
+    val dateTimeString = "${reminder.date} ${reminder.time}"
+    val sdf =
+        SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()) // Adjust format to match your app
+    val reminderTimeInMillis = sdf.parse(dateTimeString)?.time ?: return
+    val delay = reminderTimeInMillis - System.currentTimeMillis()
+
+    // Skip scheduling if the date/time is already in the past
+    if (delay <= 0) return
+
+    val data = Data.Builder()
+        .putString(WaterReminderWorker.nameKey, plantName)
+        .putString(WaterReminderWorker.reminderTitle, reminder.title)
+        .build()
+
+    //Build the work request
+    val reminderWorkRequest = OneTimeWorkRequestBuilder<WaterReminderWorker>()
+        .setInputData(data)
+        .setInitialDelay(delay, TimeUnit.MILLISECONDS)
+        .build()
+
+    //Enqueue as UNIQUE work using saved wmIdentifier
+    WorkManager.getInstance(context).enqueueUniqueWork(
+        reminder.wmIdentifier,
+        ExistingWorkPolicy.KEEP,
+        reminderWorkRequest
     )
 }

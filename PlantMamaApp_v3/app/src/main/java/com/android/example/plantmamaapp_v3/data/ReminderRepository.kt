@@ -1,5 +1,8 @@
 package com.android.example.plantmamaapp_v3.data
 
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -33,4 +36,14 @@ interface ReminderRepository {
      * Update item in the data source
      */
     suspend fun updateReminder(reminder: Reminder)
+
+    suspend fun getUnsyncedReminders(): List<Reminder>
+
+    suspend fun updateSyncState(id: Int, state: String)
+
+    suspend fun upsertReminder(reminder: Reminder)
+
+    suspend fun getLastUpdatedTime(id: Int): Long?
+
+    suspend fun getItemNonFlow(id: Int): Reminder
 }

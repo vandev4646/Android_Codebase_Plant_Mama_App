@@ -22,7 +22,7 @@ interface NoteDao {
     fun getNotesForPlant(plantId: Int): Flow<List<NoteWithPhotos>>
 
     @Transaction
-    @Query("SELECT * FROM plants WHERE id = :plantId")
+    @Query("SELECT * FROM plants WHERE id = :plantId AND syncState != 'TO_DELETE'")
     fun getFullPlantHistory(plantId: Int): Flow<PlantWithNotesAndPhotos>
 
     @Delete
@@ -39,5 +39,22 @@ interface NoteDao {
 
     @Query("DELETE FROM note_photo_cross_ref WHERE noteId = :noteId")
     suspend fun deleteNotePhotoCrossRefsForNote(noteId: Int)
+
+    //functions to support firestore sync
+    @Transaction
+    @Query("SELECT * FROM notes WHERE syncState = 'NOT_SYNCED'")
+    suspend fun getUnsyncedNotes(): List<NoteWithPhotos>
+
+    @Query("UPDATE notes SET syncState = :state WHERE noteId = :id")
+    suspend fun updateSyncState(id: Int, state: String)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsertNote(note: Note)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertCrossRef(crossRef: NotePhotoCrossRef)
+
+    @Query("SELECT lastUpdated FROM notes WHERE noteId = :id")
+    suspend fun getLastUpdatedTime(id: Int): Long?
 
 }

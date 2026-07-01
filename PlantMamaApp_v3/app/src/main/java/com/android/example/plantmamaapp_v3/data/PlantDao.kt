@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.Flow
  */
 @Dao
 interface PlantDao {
-    @Query("SELECT * from plants ORDER BY name ASC")
+    @Query("SELECT * from plants WHERE syncState != 'TO_DELETE' ORDER BY name ASC")
     fun getAllItems(): Flow<List<Plant>>
 
     @Query("SELECT * from plants WHERE id = :id")
@@ -25,11 +25,24 @@ interface PlantDao {
     // Specify the conflict strategy as IGNORE, when the user tries to add an
     // existing Item into the database Room ignores the conflict.
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insert(plant: Plant)
+    suspend fun insert(plant: Plant): Long
 
     @Update
     suspend fun update(plant: Plant)
 
     @Delete
     suspend fun delete(plant: Plant)
+
+    //functions to support firestore sync
+    @Query("SELECT * FROM plants WHERE syncState = 'NOT_SYNCED'")
+    suspend fun getUnsyncedPlants(): List<Plant>
+
+    @Query("UPDATE plants SET syncState = :state WHERE id = :id")
+    suspend fun updateSyncState(id: Int, state: String)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun upsertPlant(plant: Plant)
+
+    @Query("SELECT lastUpdated FROM plants WHERE id = :id")
+    suspend fun getLastUpdatedTime(id: Int): Long?
 }

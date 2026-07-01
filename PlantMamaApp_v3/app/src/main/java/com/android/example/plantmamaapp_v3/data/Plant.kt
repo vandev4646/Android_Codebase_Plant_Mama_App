@@ -13,4 +13,6 @@ data class Plant(
     val datePurchased: Date,
     val type: String,
     val description: String,
+    val lastUpdated: Long = System.currentTimeMillis(),
+    val syncState: SyncState = SyncState.NOT_SYNCED
 )
